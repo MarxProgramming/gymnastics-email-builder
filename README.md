@@ -31,11 +31,11 @@ Open **Extensions → Apps Script** in a new spreadsheet, replace the starter co
 Highlight your intended rows, then use the club email menu:
 
 - **Check selected rows (no email)** opens a result dialog showing the heading row, mapped columns, eligible count, skip reasons and any planned Email Status column. It sends nothing and changes no cells.
-- **Send selected emails** starts immediately, one row at a time, and records each result in Email Status.
+- **Send selected emails** starts immediately, one row at a time, and records each result in Email Status. Every eligible selected row is sent again on a new manual invocation, regardless of any previous Email Status—including sent, interrupted or error statuses.
 
-The script deduplicates overlapping row selections, skips rows with nonblank Email Status or Review, and skips rows hidden manually or by a standard filter. Google filter views are not detected. Siblings sharing an email address receive separate emails. Sending stops before the time limit or when the available email quota is exhausted; reselect the same rows later to continue. A document lock prevents overlapping send runs. Ambiguous or interrupted sends retain a status so they are not automatically sent again: check Sent mail before clearing a status.
+The script deduplicates overlapping row selections within each send. It skips rows with nonblank Review, missing names or invalid email addresses, and rows hidden manually or by a standard filter. Google filter views are not detected. Siblings sharing an email address receive separate emails. Sending stops before the time limit or when the available email quota is exhausted; select only the remaining unsent rows to continue, because selecting previously sent rows sends another email. A document lock prevents overlapping send runs. The script does not automatically retry failed rows. If a send was interrupted, check Sent mail before selecting that row again.
 
-Use the appropriate club Google account. Google may require first-use authorisation. A new campaign needs a fresh copy with blank statuses, or deliberately cleared statuses for only the rows to send again.
+Use the appropriate club Google account. Google may require first-use authorisation. There is no need to clear Email Status for a new message or to resend: it records the latest result and is never used as an eligibility filter.
 
 ## Development
 
