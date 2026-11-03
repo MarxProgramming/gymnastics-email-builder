@@ -44,8 +44,10 @@
 @media(max-width:1050px) and (min-width:761px){.advanced-mode .workspace{grid-template-columns:minmax(0,1.04fr) minmax(0,1fr)}.advanced-mode main{padding:0 20px}.advanced-mode .editor{padding:22px 17px}.advanced-mode .session-row{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:4px}.advanced-mode .class-editor{padding:13px}.advanced-mode .field-pair{gap:8px}.advanced-mode .field-pair label{font-size:10px}.advanced-mode input[type=date]{font-size:10px;padding:7px}.mode-options small{font-size:7px}.mode-options strong{font-size:10px}.calendar-days{gap:3px}.calendar-day small{font-size:7px}.session-row input,.session-row select{font-size:9px}.preview-class-panel{padding:13px}}
 @media(max-width:760px){.advanced-mode .preview-column{position:static}.advanced-mode .workspace{gap:24px}.advanced-mode .panel-heading{flex-wrap:wrap}.mode-options label>span{padding:12px 7px}.mode-options strong{font-size:11px}.mode-options small{font-size:8px}.class-editor{padding:16px}.field-pair{gap:10px}.field-pair label{font-size:11px}.class-editor input[type=time]{font-size:11px}.session-row select{font-size:11px}.session-row{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr) 19px}.advanced-mode iframe{height:590px}.preview-class-panel{margin-top:3px}.setup-section{padding-top:22px;padding-bottom:24px}}
 @media(max-width:390px){.class-editor{padding:12px}.session-row{grid-template-columns:1fr 1fr 1fr 16px;gap:4px}.class-editor input[type=time],.session-row select{font-size:9px;padding:5px}.field-pair input[type=date]{font-size:11px;padding:7px}.calendar-day small{font-size:7px}.calendar-days{gap:3px}.mode-options strong{font-size:10px}.mode-options small{font-size:7px}.mode-options label>span{padding:11px 5px}}
-@media(min-width:761px){.advanced-mode iframe{height:clamp(260px,calc(100vh - 470px),570px)}.advanced-mode .empty-preview{min-height:260px}.advanced-mode .preview-shell{min-height:330px}}
+@media(min-width:761px){.advanced-mode iframe{height:clamp(420px,calc(100vh - 360px),720px)}.advanced-mode .empty-preview{min-height:260px}.advanced-mode .preview-shell{min-height:330px}}
 @media(min-width:761px) and (max-height:700px){.advanced-mode .preview-column{position:static}}
+/* Regular timetables: commercial details first; optional schedule editing. */
+.regular-classes-note{font-size:10px;line-height:1.8;background:var(--accent-soft);color:#7b6b85;padding:12px 14px;border-radius:7px;margin:0 0 14px}.regular-classes-note a{display:inline-block;color:var(--accent);text-underline-offset:3px;margin-top:3px}.class-selection-controls{display:flex;justify-content:flex-end;gap:14px;margin:0 0 12px}.class-selection-controls button{border:0;background:none;font-size:10px;color:#8a9a77;padding:3px 0;text-decoration:underline;text-underline-offset:3px}.class-selection-controls button:hover{color:var(--ink)}.class-editor-heading{margin-bottom:9px}.include-class{display:flex;align-items:center;gap:6px;white-space:nowrap;margin:0!important;cursor:pointer;color:#7f906d;font-size:10px!important}.include-class input{width:13px;height:13px;margin:0}.compact-timetable{font-size:9px;color:#9aa88b;line-height:1.8;margin:0 0 15px;overflow-wrap:anywhere}.class-payment-grid{display:grid;grid-template-columns:minmax(80px,.7fr) minmax(0,1.7fr);gap:10px}.class-payment-grid .form-field{min-width:0;margin-bottom:0}.class-payment-grid input{height:40px;font-size:11px}.compact-fee-hint{font-size:9px!important;margin:8px 0 12px!important;line-height:1.7}.edit-class-details{border-top:1px solid #e6eadf;margin-top:13px;padding:11px 0 0}.edit-class-details>summary,.class-dates-details>summary{font-size:10px;cursor:pointer;list-style:none;color:#899b74;line-height:1.6}.edit-class-details>summary::-webkit-details-marker,.class-dates-details>summary::-webkit-details-marker{display:none}.edit-class-details>summary:after,.class-dates-details>summary:after{content:'＋';float:right;font-size:13px;color:#a2af93}.edit-class-details[open]>summary:after,.class-dates-details[open]>summary:after{content:'−'}.edit-class-body{padding-top:16px}.class-dates-details{border-top:1px solid #e6eadf;margin-top:11px;padding-top:11px}.class-dates-details>summary small{display:block;font-size:9px;color:#a4af98;margin-top:4px}.class-dates-details .class-schedule{border-top:0;padding-top:8px}.class-excluded{background:#f8f9f5;border-style:dashed}.class-excluded .class-editor-heading h4{color:#a0aa94}.class-excluded .compact-timetable{margin-bottom:0;color:#afb8a5}.class-excluded .class-number{background:#eef0e9;color:#acb49f}@media(max-width:390px){.class-payment-grid{grid-template-columns:85px minmax(0,1fr);gap:8px}.class-payment-grid input{font-size:10px}.include-class{font-size:9px!important;gap:5px}}
 
 </style>
   
@@ -86,7 +88,7 @@
           </div></fieldset>
           <fieldset class="club-field"><legend>Choose your club</legend><div class="club-options" id="club-options"></div></fieldset>
           <fieldset id="advanced-fields" class="advanced-fields" hidden disabled>
-            <p class="mode-explanation">Set up your term and classes once. Your script includes every class you add.</p>
+            <p class="mode-explanation">Set up your term and classes once. Your script includes the classes you choose.</p>
             <section class="setup-section" aria-labelledby="term-heading">
               <div class="section-label"><span>1</span><h3 id="term-heading">Term &amp; dates</h3></div>
               <div class="form-field"><label for="term-name">Term name</label><input id="term-name" type="text" placeholder="e.g. Spring term" autocomplete="off" maxlength="100"></div>
@@ -95,8 +97,9 @@
             </section>
             <section class="setup-section" aria-labelledby="classes-heading">
               <div class="section-label"><span>2</span><h3 id="classes-heading">Classes &amp; payment links</h3></div>
-              <p class="field-hint">Add only the classes you need. Each weekly group can share the same fee and link.</p>
-              <details id="preset-details" class="preset-details" hidden><summary>Start with a saved class example</summary><p class="field-hint" id="preset-note"></p><div class="preset-actions"><select id="class-preset" aria-label="Saved class example"></select><button type="button" class="secondary" id="add-preset">Add example</button></div></details>
+              <p class="field-hint" id="classes-hint">Choose the classes you need. Each weekly group can share the same fee and link.</p>
+              <p id="regular-classes-note" class="regular-classes-note" hidden></p>
+              <div class="class-selection-controls"><button type="button" id="include-all-classes">Include all</button><button type="button" id="exclude-all-classes">Deselect all</button></div>
               <div id="class-list" class="class-list"></div>
               <button type="button" class="add-control" id="add-class"><span aria-hidden="true">＋</span> Add another class</button>
               <p id="class-count-note" class="field-hint class-count-note" role="status"></p>
@@ -1025,7 +1028,8 @@ function campaignDateText_(iso) {
 function campaignMoney_(value) { return '£' + Number(value).toFixed(2); }
 function campaignEscapeHtml_(value) { return String(value).replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]); }
 function campaignPersonalise_(text, values) { return String(text || '').replace(/\{\{\s*(child|parent|term|class|deadline|fee|club)\s*\}\}/gi, (_, key) => String(values[key.toLowerCase()] ?? '')); }
-function campaignTextHtml_(text) { return String(text).split(/\n\s*\n/).map(paragraph => '<p style="margin:0 0 16px;font-size:16px;line-height:1.8;">' + campaignEscapeHtml_(paragraph).replace(/\n/g, '<br>') + '</p>').join(''); }
+function campaignComponent_(template, values) { return template.replace(/__EMAIL_(PARAGRAPH|BUTTON_TEXT|BUTTON_URL|HEADING)__/g, (_, key) => values[key] ?? ''); }
+function campaignTextHtml_(text, design) { return String(text).split(/\n\s*\n/).map(paragraph => campaignComponent_(design.paragraph, { PARAGRAPH: campaignEscapeHtml_(paragraph).replace(/\n/g, '<br>') })).join(''); }
 
 function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   if (!cls) throw new Error('Choose a class using the spreadsheet email menu before sending.');
@@ -1035,6 +1039,8 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   const personal = text => campaignPersonalise_(text, values);
   const esc = campaignEscapeHtml_;
   const accent = brand.accent;
+  const design = brand.design;
+  if (!design) throw new Error('The club email components are missing. Regenerate this script in the email builder.');
   const subject = personal(content.subject).trim();
   if (!subject || /[\r\n]/.test(subject) || subject.length > 240) throw new Error('Use a single-line subject of 1–240 characters after personalisation.');
   const intro = personal(content.body).trim();
@@ -1044,17 +1050,17 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   rows.push(['Total term fee', campaignMoney_(cls.fee)]);
   rows.push([mode === 'renewal' ? 'Renew by' : 'Accept by', deadline]);
   if (schedule.excludedDates.length) rows.push(['No class on', schedule.excludedDates.map(campaignDateText_).join(', ')]);
-  const card = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:20px 0;border-collapse:separate;border:1px solid #E7E2EC;border-left:4px solid ' + accent + ';border-radius:10px;background:#FAF9FC;"><tr><td style="padding:20px 22px;">' + rows.map(([label,value]) => '<p style="margin:0 0 9px;font-size:15px;line-height:1.65;"><strong>' + esc(label) + ':</strong> ' + esc(value) + '</p>').join('') + '</td></tr></table>';
-  const button = (text, url, secondary = false) => '<table role="presentation" cellspacing="0" cellpadding="0" style="margin:20px 0 0;"><tr><td bgcolor="' + (secondary ? '#FFFFFF' : accent) + '" style="border-radius:999px;border:1px solid ' + accent + ';"><a href="' + esc(url) + '" style="display:block;padding:14px 26px;border-radius:999px;font-size:15px;font-weight:700;text-decoration:none;color:' + (secondary ? accent : '#FFFFFF') + ';">' + esc(text) + '</a></td></tr></table><p style="margin:10px 0 20px;font-size:12px;line-height:1.6;word-break:break-word;"><a href="' + esc(url) + '" style="color:' + accent + ';">' + esc(url) + '</a></p>';
-  let html = '<p style="margin:0 0 12px;font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:' + accent + ';">' + (mode === 'renewal' ? 'Renewal' : 'Place offer') + ' · ' + esc(campaign.termName) + '</p>' + campaignTextHtml_(intro) + card;
+  const card = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="' + design.panelBackground + '" style="margin:20px 0;border-collapse:separate;border:1px solid ' + design.panelBorder + ';border-left:4px solid ' + accent + ';border-radius:' + design.panelRadius + ';background:' + design.panelBackground + ';"><tr><td style="padding:20px 22px 2px;">' + rows.map(([label,value]) => campaignComponent_(design.paragraph, { PARAGRAPH: '<strong>' + esc(label) + ':</strong> ' + esc(value) })).join('') + '</td></tr></table>';
+  const button = (text, url) => '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:0 0 18px;">' + campaignComponent_(design.button, { BUTTON_TEXT: esc(text), BUTTON_URL: esc(url) }) + '</td></tr></table>';
+  let html = campaignTextHtml_(intro, design) + card;
   const plain = [intro, rows.map(([label,value]) => label + ': ' + value).join('\n')];
-  for (const note of [cls.feeNote, campaign.membershipNote]) if (note) { html += campaignTextHtml_(personal(note)); plain.push(personal(note)); }
+  for (const note of [cls.feeNote, campaign.membershipNote]) if (note) { html += campaignTextHtml_(personal(note), design); plain.push(personal(note)); }
   const paymentText = personal(campaign.paymentButtonText) || (mode === 'renewal' ? 'Pay & renew place' : 'Accept & pay');
   html += button(paymentText, cls.paymentUrl); plain.push(paymentText + ':\n' + cls.paymentUrl);
-  if (campaign.informationUrl) { const label = personal(campaign.informationButtonText) || (mode === 'renewal' ? 'Renewal information' : 'More information'); html += button(label, campaign.informationUrl, true); plain.push(label + ':\n' + campaign.informationUrl); }
+  if (campaign.informationUrl) { const label = personal(campaign.informationButtonText) || (mode === 'renewal' ? 'Renewal information' : 'More information'); html += button(label, campaign.informationUrl); plain.push(label + ':\n' + campaign.informationUrl); }
   const sections = [['additionalInfo','Further information'],['refundPolicy','Refund policy'],['whatToBring','What to bring'],['location','Location'],['parentViewing','Parent viewing']];
-  for (const [key,label] of sections) if (campaign[key]) { const value = personal(campaign[key]); html += '<h3 style="margin:24px 0 10px;font-size:17px;line-height:1.5;color:' + accent + ';">' + label + '</h3>' + campaignTextHtml_(value); plain.push(label + ':\n' + value); }
-  for (const [key,label] of [['mapUrl','View map'],['uniformUrl','View uniform']]) if (campaign[key]) { html += button(label, campaign[key], true); plain.push(label + ':\n' + campaign[key]); }
+  for (const [key,label] of sections) if (campaign[key]) { const value = personal(campaign[key]); html += campaignComponent_(design.heading, { HEADING: esc(label) }) + campaignTextHtml_(value, design); plain.push(label + ':\n' + value); }
+  for (const [key,label] of [['mapUrl','View map'],['uniformUrl','View uniform']]) if (campaign[key]) { html += button(label, campaign[key]); plain.push(label + ':\n' + campaign[key]); }
   return { subject, html, plain: plain.join('\n\n') };
 }
 
@@ -1065,7 +1071,102 @@ function mergeCampaignEmail(shell, details) {
   return { subject: details.subject, htmlBody: shell.htmlBody.replace(pattern, () => details.html), plainBody: shell.plainBody.replace(marker, () => details.plain) };
 }
 
-const CAMPAIGN_RUNTIME_SOURCE = 'const WEEKDAYS = ' + JSON.stringify(WEEKDAYS) + ';\n' + [campaignDate_,campaignRange_,campaignExcludedDates_,campaignSessions_,getClassSchedule,campaignDateText_,campaignMoney_,campaignEscapeHtml_,campaignPersonalise_,campaignTextHtml_,renderCampaignContent,mergeCampaignEmail].map(fn => fn.toString()).join('\n\n');
+const CAMPAIGN_RUNTIME_SOURCE = 'const WEEKDAYS = ' + JSON.stringify(WEEKDAYS) + ';\n' + [campaignDate_,campaignRange_,campaignExcludedDates_,campaignSessions_,getClassSchedule,campaignDateText_,campaignMoney_,campaignEscapeHtml_,campaignPersonalise_,campaignComponent_,campaignTextHtml_,renderCampaignContent,mergeCampaignEmail].map(fn => fn.toString()).join('\n\n');
+
+// Regular weekly classes. Fees, payment links, term dates and deadlines are
+// deliberately separate so each message uses the user's current information.
+const TIMETABLE_VERSION = 1;
+const regularSession = (weekday, startTime, endTime) => ({ weekday, startTime, endTime });
+const LEGACY_TIMETABLES = {
+  swl: [
+    { key: 'beginners', name: 'Beginners', aliases: ['Beginner'], sessions: [regularSession(1, '17:00', '17:45'), regularSession(2, '17:00', '17:45'), regularSession(4, '17:00', '17:45'), regularSession(5, '16:30', '17:15'), regularSession(6, '09:00', '09:45'), regularSession(0, '09:30', '10:15')] },
+    { key: 'intermediate', name: 'Intermediate', sessions: [regularSession(1, '17:45', '18:45'), regularSession(2, '17:45', '18:45'), regularSession(4, '17:45', '18:45'), regularSession(5, '16:30', '17:30'), regularSession(6, '09:45', '10:45'), regularSession(0, '09:30', '10:30'), regularSession(0, '10:30', '11:30')] },
+    { key: 'advanced', name: 'Advanced', sessions: [regularSession(1, '18:45', '20:15'), regularSession(2, '18:45', '20:15'), regularSession(4, '18:45', '20:15'), regularSession(5, '17:30', '19:00'), regularSession(6, '10:45', '12:15'), regularSession(0, '11:30', '13:00')] },
+    { key: 'juniorsquad', name: 'Junior Squad', aliases: ['Junior'], sessions: [regularSession(1, '17:00', '19:00'), regularSession(2, '17:00', '19:00'), regularSession(4, '17:00', '19:00'), regularSession(5, '17:15', '19:15'), regularSession(6, '09:45', '11:45')] },
+    { key: 'floorvault', name: 'Floor & Vault Squad', aliases: ['Floor & Vault', 'Floor and Vault', 'Floor and Vault Squad', 'F&V', 'F&V Squad'], sessions: [regularSession(5, '16:30', '19:00'), regularSession(6, '09:30', '12:00'), regularSession(6, '12:15', '14:45')] },
+    { key: 'seniorelite', name: 'Senior Elite Squad', aliases: ['Senior Elite'], combined: true, sessions: [regularSession(3, '17:00', '20:15'), regularSession(6, '14:30', '17:00')] }
+  ],
+  apex: [
+    { key: 'beginners', name: 'Beginners', aliases: ['Beginner'], sessions: [regularSession(4, '16:15', '17:00')] },
+    { key: 'intermediate', name: 'Intermediate', sessions: [regularSession(4, '17:15', '18:15'), regularSession(4, '18:15', '19:15')] },
+    { key: 'advanced', name: 'Advanced', sessions: [regularSession(4, '19:15', '20:15')] },
+    { key: 'floorvault', name: 'Floor & Vault Squad', aliases: ['Floor & Vault', 'Floor and Vault', 'Floor and Vault Squad', 'F&V', 'F&V Squad'], sessions: [regularSession(4, '18:15', '20:15')] }
+  ],
+  apexdance: [
+    { key: 'junioracro', name: 'Junior Acro', aliases: ['Junior Acro Dance'], sessions: [regularSession(5, '17:30', '18:15'), regularSession(6, '09:15', '10:00')] },
+    { key: 'intermediateacro', name: 'Intermediate Acro', aliases: ['Intermediate Acro Dance'], sessions: [regularSession(5, '18:30', '19:30'), regularSession(6, '10:00', '11:00')] },
+    { key: 'advancedacro', name: 'Advanced Acro', aliases: ['Advanced Acro Dance'], sessions: [regularSession(5, '19:30', '20:30')] }
+  ]
+};
+
+
+// Verified on the clubs' public timetables, 3 November 2026.
+const TIMETABLE_SOURCES = {
+  swl: 'https://www.swlgymnastics.co.uk/classes',
+  apex: 'https://www.apex-gymnastics.co.uk/timetable1',
+  apexdance: 'https://www.apexdanceclub.co.uk/timetable1',
+  fulham: 'https://www.fulhamgymnastics.co.uk/renewing'
+};
+const REGULAR_TIMETABLES = {
+  swl: LEGACY_TIMETABLES.swl.flatMap(spec => {
+    if (spec.key === 'juniorsquad') return [
+      { key: 'junioradvanced', name: 'Junior Advanced Class', aliases: ['Junior Advanced'], sessions: [regularSession(1, '17:45', '19:15'), regularSession(4, '17:00', '18:30')] },
+      { ...spec, sessions: spec.sessions.filter(session => session.weekday !== 4) }
+    ];
+    return [{ ...spec, sessions: spec.sessions.map(session => ({ ...session })) }];
+  }),
+  apex: LEGACY_TIMETABLES.apex.map(spec => {
+    if (spec.key === 'beginners') return { ...spec, sessions: [regularSession(4, '16:15', '17:00'), regularSession(4, '17:15', '18:00')] };
+    if (spec.key === 'floorvault') return { ...spec, key: 'twohouradvanced', name: 'Two-Hour Advanced', aliases: ['Two Hour Advanced', spec.name, ...(spec.aliases || [])] };
+    return { ...spec, sessions: spec.sessions.map(session => ({ ...session })) };
+  }),
+  apexdance: LEGACY_TIMETABLES.apexdance.map(spec => ({ ...spec, sessions: spec.sessions.map(session => ({ ...session })) })),
+  fulham: [
+    { key: 'beginners', name: 'Beginners', aliases: ['Beginner'], sessions: [regularSession(1, '16:45', '17:30')] },
+    { key: 'intermediate', name: 'Intermediate', sessions: [regularSession(1, '17:30', '18:30')] },
+    { key: 'advanced', name: 'Advanced', sessions: [regularSession(1, '18:30', '20:00')] }
+  ]
+};
+function regularSessionKey(session) { return `${Number(session.weekday)}|${session.startTime || ''}|${session.endTime || ''}`; }
+function regularSessionsMatch(left, right) {
+  if (!Array.isArray(left) || left.length !== right.length) return false;
+  return left.map(regularSessionKey).sort().join(';') === right.map(regularSessionKey).sort().join(';');
+}
+function matchesRegularName(card, spec) {
+  return [spec.name, ...(spec.aliases || [])].some(name => regularNameKey(name) === regularNameKey(card.name));
+}
+function updatedRegularSessions(card, spec) {
+  return spec.sessions.map((session, index) => ({ id: card.sessions.find(old => regularSessionKey(old) === regularSessionKey(session))?.id || `${card.id || 'cregular'}r${index + 1}`, ...session }));
+}
+
+function regularNameKey(value) { return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function regularCardHasContent(card) {
+  return Boolean(card && (['name', 'fee', 'paymentUrl', 'feeNote'].some(key => String(card[key] ?? '').trim()) || card.combined ||
+    (Array.isArray(card.sessions) && card.sessions.some(session => session && ((session.weekday !== '' && session.weekday != null) || session.startTime || session.endTime)))));
+}
+function makeRegularCard(clubId, spec) {
+  const id = `c${clubId}${spec.key}v${TIMETABLE_VERSION}`;
+  return { id, regularKey: `${clubId}:${spec.key}`, name: spec.name, fee: '', paymentUrl: '', feeNote: '', enabled: true, combined: Boolean(spec.combined),
+    sessions: spec.sessions.map((session, index) => ({ id: `${id}s${index + 1}`, ...session })) };
+}
+
+function migrateRegularTimetable(clubId, mode, draft = {}) {
+  const specs = REGULAR_TIMETABLES[clubId];
+  if (!specs || !['renewal', 'offer'].includes(mode) || Number(draft.timetableVersion) >= TIMETABLE_VERSION) return draft;
+  const found = new Set();
+  const cards = (Array.isArray(draft.cards) ? draft.cards : []).filter(regularCardHasContent).map(card => {
+    const spec = specs.find(item => card.regularKey === `${clubId}:${item.key}` || matchesRegularName(card, item));
+    if (spec) found.add(spec.key);
+    const oldDefault = (LEGACY_TIMETABLES[clubId] || []).find(item => card.name === item.name && regularSessionsMatch(card.sessions, item.sessions) && Boolean(card.combined) === Boolean(item.combined));
+    const updateKnownDefault = Boolean(spec && oldDefault);
+    // Only a complete, unedited old default is upgraded. Custom schedules,
+    // names, fees, links and notes remain as the user saved them.
+    return { ...card, ...(spec ? { regularKey: `${clubId}:${spec.key}` } : {}), enabled: card.enabled !== false,
+      ...(updateKnownDefault ? { name: spec.name, combined: Boolean(spec.combined), sessions: updatedRegularSessions(card, spec) } : { sessions: Array.isArray(card.sessions) ? card.sessions.map(session => ({ ...session })) : [] }) };
+  });
+  for (const spec of specs) if (!found.has(spec.key)) cards.push(makeRegularCard(clubId, spec));
+  return { ...draft, cards, timetableVersion: TIMETABLE_VERSION };
+}
 
 
 const CLUBS = Object.freeze([
@@ -1077,12 +1178,40 @@ const CLUBS = Object.freeze([
 
 const renderers = { swl: buildSwlEmail_, fulham: buildFulhamEmail_, apex: buildApexEmail_, apexdance: buildApexDanceEmail_ };
 const cache = new Map();
+const designCache = new Map();
 const tokenPattern = /\{\{\s*(child|parent)\s*\}\}/gi;
 
 function clubFor(id) {
   const club = CLUBS.find(club => club.id === id);
   if (!club) throw new Error('Choose one of the four clubs.');
   return club;
+}
+
+// Derive reusable components from the same renderer used by Basic emails.
+// This keeps the canonical paragraph/button HTML as the single source of truth.
+function getClubEmailDesign(clubId) {
+  clubFor(clubId);
+  if (designCache.has(clubId)) return designCache.get(clubId);
+  const renderer = renderers[clubId];
+  const content = { subject: 'Email design', message: '__EMAIL_PARAGRAPH__', buttonText: '', buttonUrl: '' };
+  const basic = renderer('__EMAIL_PARENT__', 'Child', content).htmlBody;
+  const paragraph = basic.match(/<p\b[^>]*>__EMAIL_PARAGRAPH__<\/p>/)?.[0];
+  if (!paragraph) throw new Error('The club paragraph style could not be loaded.');
+  const insertion = basic.indexOf(paragraph) + paragraph.length;
+  const suffix = basic.slice(insertion);
+  const sampleUrl = 'https://email-builder.invalid/component';
+  const withButton = renderer('__EMAIL_PARENT__', 'Child', { ...content, buttonText: '__EMAIL_BUTTON_TEXT__', buttonUrl: sampleUrl }).htmlBody;
+  if (!withButton.startsWith(basic.slice(0, insertion)) || !withButton.endsWith(suffix)) throw new Error('The club button style could not be loaded.');
+  const button = withButton.slice(insertion, withButton.length - suffix.length).split(sampleUrl).join('__EMAIL_BUTTON_URL__');
+  const greetingStyle = basic.match(/<p\s+style="([^"]+)">\s*Hi __EMAIL_PARENT__,\s*<\/p>/)?.[1];
+  const footerTag = basic.match(/<td\b(?=[^>]*class="footer-pad")[^>]*>/)?.[0] || '';
+  const panelBackground = footerTag.match(/bgcolor="([^"]+)"/)?.[1];
+  const panelBorder = footerTag.match(/border-top:1px solid ([^;]+);/)?.[1];
+  const panelRadius = basic.match(/max-width:640px;[^"\n]*border-radius:([^;]+);/)?.[1];
+  if (!button || !greetingStyle || !panelBackground || !panelBorder || !panelRadius) throw new Error('The club email design is incomplete.');
+  const design = Object.freeze({ paragraph, button, heading: '<p style="' + greetingStyle + '">__EMAIL_HEADING__</p>', panelBackground, panelBorder, panelRadius });
+  designCache.set(clubId, design);
+  return design;
 }
 
 function validateContent(options = {}) {
@@ -1170,7 +1299,7 @@ async function renderPreview(clubId, options, names = { child: 'Joseph', parent:
     const campaign = validateCampaign(mode, options.campaign);
     const cls = options.previewClassId ? campaign.classes.find(item => item.id === options.previewClassId) : campaign.classes[0];
     if (!cls) throw new Error('Choose a valid class for the preview.');
-    const details = renderCampaignContent(mode, campaign, cls, content, names, clubFor(clubId));
+    const details = renderCampaignContent(mode, campaign, cls, content, names, { ...clubFor(clubId), design: getClubEmailDesign(clubId) });
     const shell = renderers[clubId](String(names.parent ?? ''), String(names.child ?? ''), { subject: details.subject, message: '__CLUB_CAMPAIGN_BODY_SLOT__', buttonText: '', buttonUrl: '' });
     email = mergeCampaignEmail(shell, details);
   }
@@ -1189,7 +1318,7 @@ async function generateCampaignScript(clubId, options) {
   const functionStart = source.indexOf(`function ${clubId}EmailContent_(parent, child)`);
   const functionEnd = source.indexOf('\n// ==========================================\n// MENU AND SELECTED-ROW SENDER', functionStart);
   if (functionEnd < 0) throw new Error('The campaign template is incomplete.');
-  const settings = { mode: options.mode, campaign, content: { subject: content.subject, body: content.body }, brand: { name: club.name, accent: club.accent } };
+  const settings = { mode: options.mode, campaign, content: { subject: content.subject, body: content.body }, brand: { name: club.name, accent: club.accent, design: getClubEmailDesign(clubId) } };
   const campaignFunctions = `// Term settings and class choices. The fee is the configured total, never auto-prorated.
 const EMAIL_CAMPAIGN = ${stringLiteral(settings)};
 let selectedCampaignClass_ = null;
@@ -1218,7 +1347,11 @@ function runClassCampaign_(dryRun) {
   // Snapshot the target sheet and selected row boundaries before the prompt.
   const captured = { sheet, ranges: selection.getRanges().map(range => ({ first: range.getRow(), last: range.getLastRow() })) };
   const classes = EMAIL_CAMPAIGN.campaign.classes;
-  const choices = classes.map((cls, index) => (index + 1) + '. ' + cls.name + ' — ' + cls.sessions.map(session => WEEKDAYS[session.weekday] + ' ' + session.startTime + '–' + session.endTime).join(' + ') + ' — ' + campaignMoney_(cls.fee)).join('\\n');
+  const choices = classes.map((cls, index) => {
+    const schedule = cls.sessions.map(session => WEEKDAYS[session.weekday] + ' ' + session.startTime + '–' + session.endTime).join(' + ');
+    const label = cls.name.endsWith(schedule) ? cls.name : cls.name + ' — ' + schedule;
+    return (index + 1) + '. ' + label + ' — ' + campaignMoney_(cls.fee);
+  }).join('\\n');
   const ui = SpreadsheetApp.getUi();
   // Ui.prompt suspends Apps Script execution, so the sender acquires its lock AFTER this choice.
   const response = ui.prompt(dryRun ? 'Choose class to check' : 'Choose class to send', choices + '\\n\\nEnter the class number. This class applies to every selected row.', ui.ButtonSet.OK_CANCEL);
@@ -1274,6 +1407,7 @@ let rendering = false;
 let previewRequest = 0;
 let lastTextField = $('body');
 let classCards = [];
+let currentTimetableVersion = 0;
 let excludedDates = new Set();
 let drafts = {};
 let idCounter = 0;
@@ -1284,26 +1418,8 @@ const dayName = day => day === '' || day == null ? '' : WEEKDAYS[Number(day)] ||
 const shortDate = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
 const DAY_MS = 86400000;
 
-// Source-labelled examples; dates, fees, payment links and deadlines stay blank.
-const weekly = (weekday, startTime, endTime) => ({ weekday, startTime, endTime });
-const PRESETS = {
-  swl: [
-    { name: 'Beginners', sessions: [weekly(1, '17:00', '17:45'), weekly(2, '17:00', '17:45'), weekly(4, '17:00', '17:45'), weekly(5, '16:30', '17:15'), weekly(6, '09:00', '09:45'), weekly(0, '09:30', '10:15')] },
-    { name: 'Intermediate', sessions: [weekly(1, '17:45', '18:45'), weekly(2, '17:45', '18:45'), weekly(4, '17:45', '18:45'), weekly(5, '16:30', '17:30'), weekly(6, '09:45', '10:45'), weekly(0, '09:30', '10:30'), weekly(0, '10:30', '11:30')] },
-    { name: 'Advanced', sessions: [weekly(1, '18:45', '20:15'), weekly(2, '18:45', '20:15'), weekly(4, '18:45', '20:15'), weekly(5, '17:30', '19:00'), weekly(6, '10:45', '12:15'), weekly(0, '11:30', '13:00')] },
-    { name: 'Junior Squad', sessions: [weekly(1, '17:00', '19:00'), weekly(2, '17:00', '19:00'), weekly(4, '17:00', '19:00'), weekly(5, '17:15', '19:15'), weekly(6, '09:45', '11:45')] },
-    { name: 'Floor & Vault Squad', sessions: [weekly(5, '16:30', '19:00'), weekly(6, '09:30', '12:00'), weekly(6, '12:15', '14:45')] },
-    { name: 'Senior Elite Squad', combined: true, sessions: [weekly(3, '17:00', '20:15'), weekly(6, '14:30', '17:00')] }
-  ],
-  apex: [
-    { name: 'Beginners', sessions: [weekly(4, '16:15', '17:00')] },
-    { name: 'Intermediate', sessions: [weekly(4, '17:15', '18:15'), weekly(4, '18:15', '19:15')] },
-    { name: 'Advanced', sessions: [weekly(4, '19:15', '20:15')] },
-    { name: 'Floor & Vault Squad', sessions: [weekly(4, '18:15', '20:15')] }
-  ]
-};
 function newCard(preset = {}) {
-  return { id: newId(), name: preset.name || '', fee: '', paymentUrl: '', feeNote: '', combined: Boolean(preset.combined), sessions: (preset.sessions || [{ weekday: '', startTime: '', endTime: '' }]).map(session => ({ id: newId(), ...session })) };
+  return { id: newId(), enabled: true, name: preset.name || '', fee: '', paymentUrl: '', feeNote: '', combined: Boolean(preset.combined), sessions: (preset.sessions || [{ weekday: '', startTime: '', endTime: '' }]).map(session => ({ id: newId(), ...session })) };
 }
 function selectedClub() { return CLUBS.find(club => club.id === clubId) || CLUBS[0]; }
 function updateClub() {
@@ -1320,7 +1436,7 @@ for (const radio of document.querySelectorAll('[name="email-mode"]')) radio.addE
 
 function collectDraft() {
   const campaign = Object.fromEntries(Object.entries(campaignFields).map(([id, key]) => [key, $(id).value]));
-  return { subject: $('subject').value, body: $('body').value, buttonText: $('button-text').value, buttonUrl: $('button-url').value, addButton: $('add-button').checked, campaign, cards: classCards, excludedDates: [...excludedDates].sort(), deadlineKind: $('deadline-kind').value, previewClassId: $('preview-class').value };
+  return { subject: $('subject').value, body: $('body').value, buttonText: $('button-text').value, buttonUrl: $('button-url').value, addButton: $('add-button').checked, campaign, cards: classCards, timetableVersion: currentTimetableVersion, excludedDates: [...excludedDates].sort(), deadlineKind: $('deadline-kind').value, previewClassId: $('preview-class').value };
 }
 function saveDraft() {
   drafts[`${clubId}:${emailMode}`] = collectDraft();
@@ -1330,12 +1446,13 @@ function saveDraft() {
 function normalizeCards(cards) {
   if (!Array.isArray(cards)) return [newCard()];
   return cards.filter(card => card && typeof card === 'object').map(card => ({
-    id: /^c[a-z0-9]+$/i.test(card.id) ? card.id : newId(), name: string(card.name), fee: string(card.fee), paymentUrl: string(card.paymentUrl), feeNote: string(card.feeNote), combined: card.combined === true,
+    id: /^c[a-z0-9]+$/i.test(card.id) ? card.id : newId(), regularKey: string(card.regularKey), enabled: card.enabled !== false, name: string(card.name), fee: string(card.fee), paymentUrl: string(card.paymentUrl), feeNote: string(card.feeNote), combined: card.combined === true,
     sessions: (Array.isArray(card.sessions) ? card.sessions : []).filter(Boolean).map(session => ({ id: /^c[a-z0-9]+$/i.test(session.id) ? session.id : newId(), weekday: session.weekday === '' || session.weekday == null ? '' : Number(session.weekday), startTime: string(session.startTime), endTime: string(session.endTime) }))
   }));
 }
 function restoreDraft() {
-  const draft = drafts[`${clubId}:${emailMode}`] || {};
+  const draft = migrateRegularTimetable(clubId, emailMode, drafts[`${clubId}:${emailMode}`] || {});
+  currentTimetableVersion = Number(draft.timetableVersion) || 0;
   const isAdvanced = emailMode !== 'basic';
   $('subject').value = typeof draft.subject === 'string' ? draft.subject : (isAdvanced ? (emailMode === 'renewal' ? '{{term}} renewal — {{club}}' : 'A place for {{child}} — {{club}}') : '');
   $('body').value = typeof draft.body === 'string' ? draft.body : (isAdvanced ? (emailMode === 'renewal' ? 'We’re pleased to invite {{child}} to renew their place for {{term}}. Please find the class details and payment information below.' : 'We’re delighted to offer {{child}} a place for {{term}}. Please find the class details and how to accept below.') : '');
@@ -1354,7 +1471,7 @@ function restoreDraft() {
   $('preview-class-panel').hidden = !isAdvanced;
   document.body.classList.toggle('advanced-mode', isAdvanced);
   $('copy-script').querySelector('span').textContent = isAdvanced ? 'Copy all-class script' : 'Copy Apps Script';
-  updateClub(); updatePresets(); renderClassCards(); updateCalendar(); updateSchedules(draft.previewClassId); updateDeadlineFields(); updateDraft(false);
+  updateClub(); updateRegularClassHelp(); renderClassCards(); updateCalendar(); updateSchedules(draft.previewClassId); updateDeadlineFields(); updateDraft(false);
 }
 function changeContext(nextClub, nextMode) {
   if (nextClub === clubId && nextMode === emailMode) return;
@@ -1362,7 +1479,7 @@ function changeContext(nextClub, nextMode) {
   clearPreview(); clearErrors(); restoreDraft(); saveDraft();
 }
 function hasCardContent(card) {
-  return Boolean(card.name.trim() || card.fee.trim() || card.paymentUrl.trim() || card.feeNote.trim() || card.combined || card.sessions.some(session => session.weekday !== '' || session.startTime || session.endTime));
+  return card.enabled !== false && Boolean(card.name.trim() || card.fee.trim() || card.paymentUrl.trim() || card.feeNote.trim() || card.combined || card.sessions.some(session => session.weekday !== '' || session.startTime || session.endTime));
 }
 function compileClasses() {
   return classCards.filter(hasCardContent).flatMap(card => {
@@ -1404,7 +1521,7 @@ function updateDraft(persist = true) {
     const isCurrent = fingerprint() === previewFingerprint;
     $('copy-script').disabled = !isCurrent; $('download-script').disabled = !isCurrent;
     $('preview-state').classList.toggle('stale', !isCurrent);
-    $('preview-state').textContent = isCurrent ? (emailMode === 'basic' ? 'This preview matches your current message.' : 'Preview one class; the copied script includes every configured class.') : 'You’ve made changes. Create a new preview before copying.';
+    $('preview-state').textContent = isCurrent ? (emailMode === 'basic' ? 'This preview matches your current message.' : 'Preview one class; the copied script includes every included class.') : 'You’ve made changes. Create a new preview before copying.';
     $('export-description').textContent = isCurrent ? (emailMode === 'basic' ? 'Your complete script is ready to copy and paste.' : `${compileClasses().length} class options in one script. Choose the class in Sheets.`) : 'Update your preview to include your latest changes.';
     $('create-preview').querySelector('span').textContent = isCurrent ? 'Create preview' : 'Update preview';
   }
@@ -1444,7 +1561,7 @@ function validate() {
     for (const [id, message] of [['term-name', 'Give this term a name.'], ['term-start', 'Add the first date of term.'], ['term-end', 'Add the last date of term.']]) {
       if (!$(id).value.trim()) { reportError(message, $(id)); return null; }
     }
-    if (!classCards.some(hasCardContent)) { reportError('Add at least one class to this email.', $('add-class')); return null; }
+    if (!classCards.some(hasCardContent)) { reportError('Include at least one class in this email.', $('add-class')); return null; }
     for (const card of classCards.filter(hasCardContent)) {
       const node = document.querySelector(`[data-card="${card.id}"]`);
       if (!card.name.trim()) { reportError('Give each class a name.', node.querySelector('[data-card-field="name"]')); return null; }
@@ -1462,15 +1579,20 @@ function sessionMarkup(card, session, index) {
   const prefix = `${card.id}-${session.id}`;
   return `<div class="session-row" data-session="${safe(session.id)}"><div><label for="${prefix}-day">Day</label><select id="${prefix}-day" data-session-field="weekday"><option value="">Choose day</option>${WEEKDAYS.map((day, value) => `<option value="${value}"${String(session.weekday) === String(value) ? ' selected' : ''}>${safe(day)}</option>`).join('')}</select></div><div><label for="${prefix}-start">Starts</label><input id="${prefix}-start" type="time" data-session-field="startTime" value="${safe(session.startTime)}"></div><div><label for="${prefix}-end">Ends</label><input id="${prefix}-end" type="time" data-session-field="endTime" value="${safe(session.endTime)}"></div><button type="button" class="remove-session" data-remove-session aria-label="Remove session ${index + 1}">×</button></div>`;
 }
+function timetableSummary(card) {
+  return card.sessions.map(session => `${dayName(session.weekday).slice(0, 3) || 'Day'} ${session.startTime || '—'}–${session.endTime || '—'}`).join(' · ');
+}
 function renderClassCards() {
-  $('class-list').innerHTML = classCards.map((card, index) => `<article class="class-editor" data-card="${safe(card.id)}"><div class="class-editor-heading"><h4><span class="class-number">${index + 1}</span><span data-card-title>${safe(card.name || `Class ${index + 1}`)}</span></h4><button type="button" class="remove-class" data-remove-card aria-label="Remove ${safe(card.name || `class ${index + 1}`)}">Remove</button></div><div class="form-field"><label for="${card.id}-name">Class name</label><input id="${card.id}-name" type="text" data-card-field="name" maxlength="100" placeholder="e.g. Beginners" value="${safe(card.name)}"></div><div class="class-sessions"><div class="session-heading">Weekly groups / sessions</div><div data-sessions>${card.sessions.map((session, sessionIndex) => sessionMarkup(card, session, sessionIndex)).join('')}</div><button type="button" class="add-session" data-add-session>＋ Add a day / time</button></div><label class="combine-label"><input type="checkbox" data-card-field="combined" ${card.combined ? 'checked' : ''}><span>These sessions form one combined programme<small>For a class that attends all the sessions above. Otherwise each day / time is a separate class option.</small></span></label><div class="form-field"><label for="${card.id}-fee">Total term fee (£)</label><input id="${card.id}-fee" type="number" min="0" step="0.01" inputmode="decimal" data-card-field="fee" placeholder="0.00" value="${safe(card.fee)}"><p class="field-hint after-input" data-fee-hint>${card.combined ? 'One total fee for the whole combined programme.' : 'The same fee applies to each separate weekly group.'} Cancelled dates update the session count; the fee stays as you enter it.</p></div><div class="form-field"><label for="${card.id}-link">Payment link</label><input id="${card.id}-link" type="url" data-card-field="paymentUrl" placeholder="https://" value="${safe(card.paymentUrl)}"></div><div class="form-field fee-note"><label for="${card.id}-note">Fee note <span>Optional</span></label><input id="${card.id}-note" type="text" data-card-field="feeNote" placeholder="Any extra detail about this fee" value="${safe(card.feeNote)}"></div><div class="class-schedule" data-schedule aria-live="polite"></div></article>`).join('');
+  $('class-list').innerHTML = classCards.map((card, index) => `<article class="class-editor${card.enabled === false ? ' class-excluded' : ''}" data-card="${safe(card.id)}"><div class="class-editor-heading"><h4><span class="class-number">${index + 1}</span><span data-card-title>${safe(card.name || `Class ${index + 1}`)}</span></h4><label class="include-class"><input id="${card.id}-include" type="checkbox" data-card-field="enabled" ${card.enabled !== false ? 'checked' : ''}><span>Include</span></label></div><p class="compact-timetable" data-timetable-summary>${safe(timetableSummary(card))}${card.combined ? ' · Combined programme' : ''}</p><div data-card-body ${card.enabled === false ? 'hidden' : ''}><div class="class-payment-grid"><div class="form-field"><label for="${card.id}-fee">Term fee (£)</label><input id="${card.id}-fee" type="number" min="0" step="0.01" inputmode="decimal" data-card-field="fee" placeholder="0.00" value="${safe(card.fee)}"></div><div class="form-field"><label for="${card.id}-link">Payment link</label><input id="${card.id}-link" type="url" data-card-field="paymentUrl" placeholder="https://" value="${safe(card.paymentUrl)}"></div></div><p class="field-hint after-input compact-fee-hint" data-fee-hint>${card.combined ? 'One total fee for the whole combined programme.' : 'This fee and link apply to each separate weekly group.'} The fee stays as entered when dates are cancelled.</p><details class="edit-class-details" ${card.regularKey ? '' : 'open'}><summary>Edit class name or timetable</summary><div class="edit-class-body"><div class="form-field"><label for="${card.id}-name">Class name</label><input id="${card.id}-name" type="text" data-card-field="name" maxlength="100" placeholder="e.g. Beginners" value="${safe(card.name)}"></div><div class="class-sessions"><div class="session-heading">Weekly groups / sessions</div><div data-sessions>${card.sessions.map((session, sessionIndex) => sessionMarkup(card, session, sessionIndex)).join('')}</div><button type="button" class="add-session" data-add-session>＋ Add a day / time</button></div><label class="combine-label"><input type="checkbox" data-card-field="combined" ${card.combined ? 'checked' : ''}><span>These sessions form one combined programme<small>For a class that attends all the sessions above. Otherwise each day / time is a separate class option.</small></span></label><div class="form-field fee-note"><label for="${card.id}-note">Fee note <span>Optional</span></label><input id="${card.id}-note" type="text" data-card-field="feeNote" placeholder="Any extra detail about this fee" value="${safe(card.feeNote)}"></div>${card.regularKey ? '' : `<button type="button" class="remove-class" data-remove-card aria-label="Remove ${safe(card.name || `class ${index + 1}`)}">Remove this custom class</button>`}</div></details><details class="class-dates-details"><summary>Teaching dates &amp; session counts<small data-count-summary></small></summary><div class="class-schedule" data-schedule aria-live="polite"></div></details></div></article>`).join('');
 }
-function updatePresets() {
-  const presets = PRESETS[clubId] || [];
-  $('preset-details').hidden = !presets.length;
-  $('preset-note').textContent = clubId === 'swl' ? 'From your Autumn 2026 offer reference. Check and edit every day and time for this term. Fees and links are left blank.' : 'From your saved Apex Gymnastics reference. Check and edit every day and time for this term. Fees and links are left blank.';
-  $('class-preset').innerHTML = presets.map((preset, index) => `<option value="${index}">${safe(preset.name)}${preset.combined ? ' — combined programme' : ''}</option>`).join('');
+function updateRegularClassHelp() {
+  const hasRegular = Boolean(REGULAR_TIMETABLES[clubId]);
+  $('regular-classes-note').hidden = !hasRegular;
+  $('regular-classes-note').innerHTML = hasRegular ? `Your regular classes and weekly times are ready. Add this term’s fees and payment links. Untick any class you don’t need for this message. <a href="${safe(TIMETABLE_SOURCES[clubId])}" target="_blank" rel="noopener noreferrer">View club timetable ↗</a>` : '';
+  $('classes-hint').textContent = hasRegular ? 'Included classes appear in the copied script. Fees and links are shared across each class type’s weekly groups.' : 'Add the classes you need, then enter their weekly times, fees and payment links.';
+  $('add-class').innerHTML = `<span aria-hidden="true">＋</span> ${hasRegular ? 'Add a different class' : 'Add another class'}`;
 }
+
 function dateRange() {
   const startText = $('term-start').value; const endText = $('term-end').value;
   if (!startText || !endText) return [];
@@ -1513,6 +1635,13 @@ function updateSchedules(preferredId = $('preview-class').value) {
   for (const card of classCards) {
     const target = document.querySelector(`[data-card="${card.id}"] [data-schedule]`); if (!target) continue;
     const own = options.filter(item => item.id === card.id || item.id.startsWith(`${card.id}-`));
+    const ownSchedules = own.map(item => scheduleFor(item, campaign)).filter(Boolean);
+    const summary = document.querySelector(`[data-card="${card.id}"] [data-count-summary]`);
+    if (summary) {
+      if (!ownSchedules.length) summary.textContent = 'Add term dates to see the session counts';
+      else if (card.combined) summary.textContent = scheduleSummary(ownSchedules[0]);
+      else { const counts = ownSchedules.map(item => item.sessionCount); const low = Math.min(...counts), high = Math.max(...counts); summary.textContent = `${own.length} weekly ${own.length === 1 ? 'group' : 'groups'} · ${low === high ? low : `${low}–${high}`} sessions per group`; }
+    }
     target.innerHTML = own.map(item => {
       const schedule = scheduleFor(item, campaign);
       const heading = card.combined ? 'Combined programme' : `${dayName(item.sessions[0]?.weekday) || 'Session'} ${item.sessions[0]?.startTime || ''}`;
@@ -1535,10 +1664,12 @@ $('class-list').addEventListener('input', (event) => {
   if (field) {
     card[field] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if (field === 'name') node.querySelector('[data-card-title]').textContent = card.name || `Class ${classCards.indexOf(card) + 1}`;
-    if (field === 'combined') node.querySelector('[data-fee-hint]').textContent = `${card.combined ? 'One total fee for the whole combined programme.' : 'The same fee applies to each separate weekly group.'} Cancelled dates update the session count; the fee stays as you enter it.`;
+    if (field === 'combined') node.querySelector('[data-fee-hint]').textContent = `${card.combined ? 'One total fee for the whole combined programme.' : 'This fee and link apply to each separate weekly group.'} The fee stays as entered when dates are cancelled.`;
+    if (field === 'enabled') { node.querySelector('[data-card-body]').hidden = !card.enabled; node.classList.toggle('class-excluded', !card.enabled); }
   }
   const sessionField = event.target.dataset.sessionField;
   if (sessionField) { const session = card.sessions.find(item => item.id === event.target.closest('[data-session]').dataset.session); session[sessionField] = sessionField === 'weekday' && event.target.value !== '' ? Number(event.target.value) : event.target.value; }
+  node.querySelector('[data-timetable-summary]').textContent = timetableSummary(card) + (card.combined ? ' · Combined programme' : '');
   event.target.removeAttribute('aria-invalid'); updateSchedules(); updateDraft();
 });
 $('class-list').addEventListener('click', (event) => {
@@ -1550,15 +1681,14 @@ $('class-list').addEventListener('click', (event) => {
   else if (button.hasAttribute('data-remove-session')) card.sessions = card.sessions.filter(session => session.id !== button.closest('[data-session]').dataset.session);
   else return;
   renderClassCards(); updateSchedules(); updateDraft();
-  if (focusId) $(focusId).focus(); else $('add-class').focus();
+  if (focusId) { $(focusId).closest('details').open = true; $(focusId).focus(); }
+  else if (button.hasAttribute('data-remove-session')) { const editor = document.querySelector(`[data-card="${card.id}"] .edit-class-details`); if (editor) { editor.open = true; editor.querySelector('[data-add-session]').focus(); } }
+  else $('add-class').focus();
 });
 $('add-class').addEventListener('click', () => { const card = newCard(); classCards.push(card); renderClassCards(); updateSchedules(); updateDraft(); $(`${card.id}-name`).focus(); });
-$('add-preset').addEventListener('click', () => {
-  const preset = PRESETS[clubId]?.[Number($('class-preset').value)]; if (!preset) return;
-  const card = newCard(preset);
-  // Replace the empty starting card rather than leaving an unused invalid class.
-  if (classCards.length === 1 && !classCards[0].name && !classCards[0].fee && !classCards[0].paymentUrl && classCards[0].sessions.every(session => session.weekday === '' && !session.startTime && !session.endTime)) classCards = [];
-  classCards.push(card); renderClassCards(); updateSchedules(); updateDraft(); $(`${card.id}-name`).focus();
+for (const [id, enabled] of [['include-all-classes', true], ['exclude-all-classes', false]]) $(id).addEventListener('click', () => {
+  for (const card of classCards) card.enabled = enabled;
+  renderClassCards(); updateSchedules(); updateDraft();
 });
 $('term-calendar').addEventListener('change', (event) => {
   if (event.target.dataset.date) { if (event.target.checked) excludedDates.delete(event.target.dataset.date); else excludedDates.add(event.target.dataset.date); }
@@ -1617,7 +1747,7 @@ for (const view of ['desktop', 'mobile']) $(`${view}-view`).addEventListener('cl
   for (const id of ['desktop', 'mobile']) { $(`${id}-view`).classList.toggle('selected', view === id); $(`${id}-view`).setAttribute('aria-pressed', String(view === id)); }
 });
 function scriptIsCurrent() { return Boolean(currentScript) && fingerprint() === previewFingerprint; }
-function copiedMessage() { return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script in your spreadsheet.' : 'All classes copied. Paste into Apps Script, reload your sheet, select rows, then choose their class when sending.'; }
+function copiedMessage() { return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script in your spreadsheet.' : 'Included classes copied. Paste into Apps Script, reload your sheet, select rows, then choose their class when sending.'; }
 $('copy-script').addEventListener('click', async () => {
   if (!scriptIsCurrent()) return;
   try {

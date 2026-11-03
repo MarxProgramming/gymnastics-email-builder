@@ -13,12 +13,23 @@ The password screen remembers access for 90 days in the current browser. This is
 1. Choose the club and **Basic email**, **Renewal** or **Place offer**. Each club and mode keeps its own draft on this browser.
 2. For a basic email, enter a subject and body and optionally add a button with an HTTPS link. The template supplies the greeting and sign-off.
 3. For renewals and offers, set the term name and start/end dates. The calendar lets you cancel individual dates or a full week and restore them later. Enter the payment deadline; offers can instead use an acceptance window in hours.
-4. Add the class types you need, with the total term fee, payment link, and weekly days/times. Several session choices can share one price/link. Mark a class as a combined programme only when the same child attends all of its sessions. Add a separate class card when a weekday needs a different fee or payment link.
-5. Add any extra information, membership note, payment instructions or offer details. Dates, fees, links and policies from old example campaigns are not automatically treated as current. SWL and Apex timetable suggestions remain editable; Fulham and Apex Dance accept your own classes.
+4. The club’s regular class types, days and times load automatically for both renewals and offers. Enter the total term fee and payment link for each included class. You can deselect classes you do not need, edit a timetable when necessary, or use **Add a different class** for an extra class type. Several weekly groups can share one price/link. Combined programmes, such as SWL Senior Elite’s Wednesday and Saturday sessions, use one total fee. Add a separate class card when a weekday needs a different fee or payment link.
+5. Add any extra information, membership note, payment instructions or offer details. Dates, fees, links and policies from old example campaigns are not automatically treated as current. All four clubs have a regular timetable built in. Existing saved prices, payment links and custom timetable edits are preserved when drafts are upgraded.
 6. Choose the class to preview, then select **Create preview**. The script contains every configured class, not just the preview choice. The displayed dates and session counts reflect exclusions; fees are the total amounts you enter and are never automatically prorated.
 7. Select **Copy Apps Script**, or download the `.gs` file. Any change requires a fresh preview before copying.
 
 Use `{{child}}` and `{{parent}}` in subject or message to personalise from each row. Renewals and offers also support `{{term}}`, `{{class}}`, `{{deadline}}`, `{{fee}}` and `{{club}}`. Preview sample names are Joseph for both parent and child. Desktop and phone previews are available.
+
+## Regular timetable defaults
+
+Class types and weekly session times were checked against the clubs’ official websites on 3 November 2026 and are used as the ongoing defaults in both Renewal and Offer modes:
+
+- [SWL Gymnastics](https://www.swlgymnastics.co.uk/classes): seven types, including Junior Advanced Class; Senior Elite is one combined Wednesday/Saturday programme.
+- [Apex Gymnastics](https://www.apex-gymnastics.co.uk/timetable1): four types, with six Thursday groups, including two Beginners sessions and Two-Hour Advanced.
+- [Apex Dance Club](https://www.apexdanceclub.co.uk/timetable1): Junior, Intermediate and Advanced Acro, with five groups across Friday and Saturday.
+- [Fulham Gymnastics](https://www.fulhamgymnastics.co.uk/renewing): Beginners, Intermediate and Advanced on Mondays.
+
+Timetables are built into the app rather than fetched when sending. Term dates, exclusions, prices, payment links and deadlines remain configurable. Every email type uses the same club header, logo, typography, button styling and footer; renewal and offer details sit inside that shared design.
 
 ## Use the script in Google Sheets
 
