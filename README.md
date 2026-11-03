@@ -1,6 +1,6 @@
 # Club email builder
 
-Public GitHub Pages app for the four clubs. Open the published app link shown in this repository’s About or Pages settings.
+[Open the public app](https://marxprogramming.github.io/gymnastics-email-builder/).
 
 A simple browser app for creating branded emails for SWL Gymnastics, Fulham Gymnastics, Apex Gymnastics and Apex Dance Club. Choose a club, enter a subject and message, optionally add one button, then create a preview and copy the complete standalone Google Apps Script. SWL and Fulham retain their saved designs. Apex Gymnastics has a teal gradient header and white logo; Apex Dance uses its purple and gold website branding.
 
@@ -18,17 +18,19 @@ The password screen remembers access for 90 days in the current browser. This is
 
 ## Use the script in Google Sheets
 
-In row 1, include these headings, in any order:
+Include headings for the child, parent and recipient email in one row within the first 20 rows, in any column order:
 
-`Childs Name | Parents Name | Email | Email Status | Review`
+`Childs Name | Parents Name | Email`
 
-Other columns are allowed. Names and a valid email are required for each recipient. The sender recognises straight or curly apostrophes in headings, ignores letter case and surrounding whitespace, and reports missing or duplicated required headings.
+Common variations are accepted, including `Child Name`, `Child’s First Name`, `Parent Name`, `Guardian Name`, `Email Address` and `Parent Email`. The sender normalises apostrophes, punctuation, letter case and spacing. Names and a valid email are required for each recipient. Multiple possible heading rows or two recognised columns for the same role produce an actionable error instead of guessing. `PARENT2`, phone columns and attendance dates are not mistaken for the required fields.
+
+`Email Status` is added automatically at the first column after all existing data when the first eligible email is sent. Existing attendance, notes and contact columns are preserved. A `Review` column is optional; if present, its existing skip behaviour is retained. Checking rows never adds columns or changes cells.
 
 Open **Extensions → Apps Script** in a new spreadsheet, replace the starter code with the complete generated script, save, then reload the sheet. Preserve existing scripts if you add this to an established project: do not paste multiple full club scripts into one project because their shared function names would collide.
 
 Highlight your intended rows, then use the club email menu:
 
-- **Check selected rows (no email)** counts eligible rows without sending or changing statuses.
+- **Check selected rows (no email)** opens a result dialog showing the heading row, mapped columns, eligible count, skip reasons and any planned Email Status column. It sends nothing and changes no cells.
 - **Send selected emails** starts immediately, one row at a time, and records each result in Email Status.
 
 The script deduplicates overlapping row selections, skips rows with nonblank Email Status or Review, and skips rows hidden manually or by a standard filter. Google filter views are not detected. Siblings sharing an email address receive separate emails. Sending stops before the time limit or when the available email quota is exhausted; reselect the same rows later to continue. A document lock prevents overlapping send runs. Ambiguous or interrupted sends retain a status so they are not automatically sent again: check Sent mail before clearing a status.
@@ -47,8 +49,8 @@ npm test
 
 Open `http://localhost:4173` after starting the preview server. Publish the contents of `dist` using static hosting, or a GitHub Pages workflow that uploads `dist`.
 
-The engine replaces the email-content function and uses the send-only MailApp service. SWL and Fulham template designs remain unchanged. The app-owned Apex Gymnastics and Apex Dance variants preserve the same sequential sender and safeguards. Original templates on the desktop are never edited. Generated script inputs are encoded as data, and personalisation is escaped in the rendered email.
+The engine replaces the email-content function and uses the send-only MailApp service. All four app-owned templates share a sender that detects headings and adds tracking safely. SWL and Fulham email designs remain unchanged; the Apex Gymnastics and Apex Dance variants retain their requested branding. Original templates on the desktop are never edited. Generated script inputs are encoded as data, and personalisation is escaped in the rendered email.
 
-Run `node scripts/build-templates.mjs` after changing a checked-in template to regenerate the exact preview functions. Run `node scripts/build-standalone.mjs` to create a single offline file at `build/index.html`, or pass an explicit destination path. This file embeds the app, gate, templates and images without external dependencies. The optional `build-variants.mjs` helper recreates the two app-owned variants from an original Apex template folder and the supplied brand PNGs.
+Run `node scripts/build-senders.mjs` after changing `scripts/selected-row-sender.gs` to apply the shared sender to all four app templates. Run `node scripts/build-templates.mjs` after changing an email design to regenerate the exact preview functions. Run `node scripts/build-standalone.mjs` to create a single offline file at `build/index.html`, or pass an explicit destination path. This file embeds the app, gate, templates and images without external dependencies. The optional `build-variants.mjs` helper recreates the two app-owned variants from an original Apex template folder and the supplied brand PNGs, then applies the current shared sender.
 
 Offline tests use mocked Google services and must not be described as real delivery tests. A live delivery test requires an explicitly authorised recipient and a signed-in Google account.
