@@ -92,7 +92,7 @@
           </div></fieldset>
           <fieldset class="club-field"><legend>Choose your club</legend><div class="club-options" id="club-options"></div></fieldset>
           <fieldset id="advanced-fields" class="advanced-fields" hidden disabled>
-            <p class="mode-explanation">Check the term dates and class totals, then add your payment links. The club’s usual information is included for you.</p>
+            <p class="mode-explanation">Check the term dates, class totals and payment links. The club’s usual information is included for you.</p>
             <section class="setup-section" aria-labelledby="term-heading">
               <div class="section-label"><span>1</span><h3 id="term-heading">Term &amp; dates</h3></div>
               <div id="term-preset-panel" class="term-preset-panel" hidden><div class="term-preset-heading"><strong>Spring 2027</strong><span id="term-preset-status"></span></div><button type="button" id="load-term-defaults" class="secondary">Load Spring 2027 defaults</button><p id="term-preset-hint">Replaces the current dates, breaks and available regular-class fee totals. Keeps your payment links, notes and chosen deadline.</p><p id="term-preset-feedback" role="status" hidden></p></div>
@@ -1369,6 +1369,51 @@ const TERM_PRESETS = {
   apexdance: { id: 'spring-2027', label: 'Spring 2027', termName: 'Spring 2027', startDate: '2027-01-08', endDate: '2027-03-20', excludedDates: ['2027-02-19','2027-02-20'], status: 'ready', feeHint: '10 classes in each weekly group, excluding 19–20 February; published session rates.' }
 };
 
+// Verified public Square checkout links for Spring 2027 renewal tuition only.
+// Their fixed amounts exclude new-member charges, so never reuse them in Offers.
+const TERM_PAYMENT_LINKS_VERSION = 1;
+const SPRING_RENEWAL_PAYMENT_LINKS = {
+  swl: {
+    beginners: { url: 'https://square.link/u/hlc2GxQ6', amountPence: 22000, title: 'SWL Beginners - Spring 2027 Renewal (11 weeks)' },
+    intermediate: { url: 'https://square.link/u/4hBq2qKF', amountPence: 25300, title: 'SWL Intermediate - Spring 2027 Renewal (11 weeks)' },
+    advanced: { url: 'https://square.link/u/OjQcUm8a', amountPence: 28600, title: 'SWL Advanced - Spring 2027 Renewal (11 weeks)' },
+    junioradvanced: { url: 'https://square.link/u/ceYS5tXJ', amountPence: 28600, title: 'SWL Junior Advanced Class - Spring 2027 Renewal (11 weeks)' },
+    juniorsquad: { url: 'https://square.link/u/0MsWda5J', amountPence: 35200, title: 'SWL Junior Squad - Spring 2027 Renewal (11 weeks)' },
+    floorvault: { url: 'https://square.link/u/EK8lYpJ0', amountPence: 39600, title: 'SWL Floor & Vault Squad - Spring 2027 Renewal (11 weeks)' },
+    seniorelite: { url: 'https://square.link/u/f2AfMH27', amountPence: 80300, title: 'SWL Senior Elite Squad - Spring 2027 Renewal (11 weeks)' }
+  },
+  apex: {
+    beginners: { url: 'https://square.link/u/r1CZo5tX', amountPence: 15000, title: 'Apex Gymnastics Beginners - Spring 2027 Renewal (10 weeks)' },
+    intermediate: { url: 'https://square.link/u/VK3qHhqp', amountPence: 17000, title: 'Apex Gymnastics Intermediate - Spring 2027 Renewal (10 weeks)' },
+    advanced: { url: 'https://square.link/u/KyPDuqUs', amountPence: 20000, title: 'Apex Gymnastics Advanced - Spring 2027 Renewal (10 weeks)' },
+    twohouradvanced: { url: 'https://square.link/u/9ZyYMtkg', amountPence: 34000, title: 'Apex Gymnastics Two-Hour Advanced - Spring 2027 Renewal (10 weeks)' }
+  },
+  apexdance: {
+    junioracro: { url: 'https://square.link/u/5z4aQHz7', amountPence: 14000, title: 'Apex Dance Club Junior Acro - Spring 2027 Renewal (10 weeks)' },
+    intermediateacro: { url: 'https://square.link/u/4fy0bAWe', amountPence: 16000, title: 'Apex Dance Club Intermediate Acro - Spring 2027 Renewal (10 weeks)' },
+    advancedacro: { url: 'https://square.link/u/v3kQiVko', amountPence: 16000, title: 'Apex Dance Club Advanced Acro - Spring 2027 Renewal (10 weeks)' }
+  }
+};
+function hasRenewalPaymentLinks(clubId, mode) {
+  return mode === 'renewal' && Object.prototype.hasOwnProperty.call(SPRING_RENEWAL_PAYMENT_LINKS, clubId);
+}
+
+function validateKnownPaymentAmounts(campaign) {
+  const verified = Object.values(SPRING_RENEWAL_PAYMENT_LINKS).flatMap(Object.values);
+  for (const cls of campaign.classes || []) {
+    let url;
+    try { const parsed = new URL(cls.paymentUrl); url = parsed.origin + parsed.pathname.replace(/\/+$/, ''); } catch { continue; }
+    const payment = verified.find(item => item.url === url);
+    if (!payment) continue;
+    const fee = String(cls.fee ?? '').trim();
+    if (!/^\d+(?:\.\d{1,2})?$/.test(fee) || Math.round(Number(fee) * 100) !== payment.amountPence) {
+      const amount = '£' + (payment.amountPence / 100).toFixed(2);
+      throw new Error('The payment link for ' + cls.name + ' charges ' + amount + '. Set this class’s total fee to ' + amount + ' or use a payment link for your edited price.');
+    }
+  }
+  return campaign;
+}
+
 function termValue_(value) { return value == null ? '' : String(value).trim(); }
 function termDatesKey_(dates) { return Array.isArray(dates) ? [...new Set(dates.map(termValue_))].sort().join('|') : ''; }
 function termDraftExclusions_(draft) { return draft.excludedDates ?? draft.campaign?.excludedDates ?? []; }
@@ -1431,19 +1476,39 @@ function getTermFeeHint(clubId, mode) {
   return 'Spring 2027 fees are calculated from the published weekly rate and the included class dates.';
 }
 
+function applyRenewalPaymentLinks_(clubId, mode, draft, force) {
+  if (!hasRenewalPaymentLinks(clubId, mode) || !termMatchesPreset_(draft, TERM_PRESETS[clubId])) return draft;
+  if (!force && Number(draft.termDefaults?.paymentLinksVersion) >= TERM_PAYMENT_LINKS_VERSION) return draft;
+  const cards = (draft.cards || []).map(card => {
+    const spec = termRegularSpec_(clubId, card);
+    const payment = spec && SPRING_RENEWAL_PAYMENT_LINKS[clubId][spec.key];
+    const fee = termValue_(card.fee);
+    // A checkout charges its fixed amount: never attach it to a blank, edited
+    // or invalid fee, even when its class name and schedule still match.
+    const amountMatches = /^\d+(?:\.\d{1,2})?$/.test(fee) && Math.round(Number(fee) * 100) === payment?.amountPence;
+    if (!payment || !amountMatches || (!force && termValue_(card.paymentUrl))) return card;
+    return { ...card, paymentUrl: payment.url };
+  });
+  return { ...draft, cards, termDefaults: { ...draft.termDefaults, paymentLinksVersion: TERM_PAYMENT_LINKS_VERSION } };
+}
+
 function applyTermDefaults(clubId, mode, draft = {}, { force = false } = {}) {
   const preset = TERM_PRESETS[clubId];
   if (!['renewal','offer'].includes(mode) || preset?.status !== 'ready') return draft;
   const marker = draft.termDefaults;
   const alreadyApplied = marker?.presetId === preset.id && marker?.clubId === clubId && marker?.mode === mode && Number(marker.version) >= TERM_DEFAULTS_VERSION;
-  if (!force && (alreadyApplied || (!termDraftEmpty_(draft) && !termMatchesPreset_(draft, preset)))) return draft;
+  // Payment-link migration is independent of the original date/fee migration,
+  // so existing v1 drafts can gain matching links without restoring cleared fees.
+  if (!force && alreadyApplied) return applyRenewalPaymentLinks_(clubId, mode, draft, false);
+  if (!force && !termDraftEmpty_(draft) && !termMatchesPreset_(draft, preset)) return draft;
   const base = migrateRegularTimetable(clubId, mode, draft);
   const campaign = { ...(base.campaign || {}), termName: preset.termName, startDate: preset.startDate, endDate: preset.endDate, excludedDates: [...preset.excludedDates], excludedRanges: [] };
   const cards = (base.cards || []).map(card => {
     const price = calculatePresetCardFee(clubId, mode, card);
     return { ...card, sessions: card.sessions?.map(session => ({ ...session })), ...(price && (force || !termValue_(card.fee)) ? { fee: price.fee } : {}) };
   });
-  return { ...base, campaign, cards, termChoice: 'Spring', savedTermLabel: '', excludedDates: [...preset.excludedDates], termDefaults: { version: TERM_DEFAULTS_VERSION, presetId: preset.id, clubId, mode } };
+  const result = { ...base, campaign, cards, termChoice: 'Spring', savedTermLabel: '', excludedDates: [...preset.excludedDates], termDefaults: { version: TERM_DEFAULTS_VERSION, presetId: preset.id, clubId, mode } };
+  return applyRenewalPaymentLinks_(clubId, mode, result, force);
 }
 
 
@@ -1574,7 +1639,7 @@ async function renderPreview(clubId, options, names = { child: 'Joseph', parent:
   let email;
   if (mode === 'basic') email = renderers[clubId](String(names.parent ?? ''), String(names.child ?? ''), contentForPerson);
   else {
-    const campaign = validateCampaign(mode, options.campaign);
+    const campaign = validateKnownPaymentAmounts(validateCampaign(mode, options.campaign));
     const cls = options.previewClassId ? campaign.classes.find(item => item.id === options.previewClassId) : campaign.classes[0];
     if (!cls) throw new Error('Choose a valid class for the preview.');
     const details = renderCampaignContent(mode, campaign, cls, content, names, { ...clubFor(clubId), design: getClubEmailDesign(clubId) });
@@ -1589,7 +1654,7 @@ async function renderPreview(clubId, options, names = { child: 'Joseph', parent:
 
 async function generateCampaignScript(clubId, options) {
   const content = validateContent({ subject: options.subject, body: options.body });
-  const campaign = validateCampaign(options.mode, options.campaign);
+  const campaign = validateKnownPaymentAmounts(validateCampaign(options.mode, options.campaign));
   const club = clubFor(clubId);
   const prefix = { swl: 'Swl', fulham: 'Fulham', apex: 'Apex', apexdance: 'ApexDance' }[clubId];
   let source = await loadTemplate(clubId);
@@ -1865,6 +1930,16 @@ function feeFieldHint(card) {
   const presetHint = card.regularKey && activeTermPreset() ? getTermFeeHint(clubId, emailMode) : '';
   return `${standard}${presetHint ? ` ${presetHint}` : ''} The total is editable and stays as entered when dates are cancelled.`;
 }
+function termPresetLoadHint() {
+  return hasRenewalPaymentLinks(clubId, emailMode)
+    ? 'Replaces dates, breaks, regular-class totals and their Spring renewal payment links. Keeps other links, notes and your chosen deadline.'
+    : 'Replaces the current dates, breaks and available regular-class fee totals. Keeps your payment links, notes and chosen deadline.';
+}
+function termPresetLoadedFeedback() {
+  return hasRenewalPaymentLinks(clubId, emailMode)
+    ? 'Spring 2027 dates, totals and renewal payment links loaded. Check the details, then create a new preview.'
+    : 'Spring 2027 setup loaded. Check the class totals, then create a new preview.';
+}
 function updateTermPresetUI() {
   const preset = TERM_PRESETS[clubId];
   $('term-preset-panel').hidden = emailMode === 'basic' || !preset;
@@ -1875,7 +1950,7 @@ function updateTermPresetUI() {
   const activeExclusions = [...excludedDates].filter(date => date >= $('term-start').value && date <= $('term-end').value).sort();
   const sameExclusions = active && JSON.stringify(activeExclusions) === JSON.stringify([...(preset.excludedDates || [])].sort());
   $('term-preset-status').textContent = preset.status !== 'ready' ? 'Awaiting confirmed details' : active && sameExclusions ? 'Defaults loaded · editable' : hasMarker ? 'Dates changed — review fees' : 'Available to load';
-  $('term-preset-hint').textContent = preset.status !== 'ready' ? (preset.feeHint || 'The Spring details are being confirmed. Your current draft is kept.') : 'Replaces the current dates, breaks and available regular-class fee totals. Keeps your payment links, notes and chosen deadline.';
+  $('term-preset-hint').textContent = preset.status !== 'ready' ? (preset.feeHint || 'The Spring details are being confirmed. Your current draft is kept.') : termPresetLoadHint();
   for (const card of classCards) {
     const node = document.querySelector(`[data-card="${card.id}"]`); if (!node) continue;
     node.querySelector('[data-fee-label]').textContent = feeFieldLabel(card);
@@ -1965,7 +2040,7 @@ function renderClassCards() {
 function updateRegularClassHelp() {
   const hasRegular = Boolean(REGULAR_TIMETABLES[clubId]);
   $('regular-classes-note').hidden = !hasRegular;
-  $('regular-classes-note').innerHTML = hasRegular ? `Your regular classes and weekly times are ready. Check the fees and add your payment links. Untick any class you don’t need for this message. <a href="${safe(TIMETABLE_SOURCES[clubId])}" target="_blank" rel="noopener noreferrer">View club timetable ↗</a>` : '';
+  $('regular-classes-note').innerHTML = hasRegular ? `Your regular classes and weekly times are ready. Check the fees and payment links. Untick any class you don’t need for this message. <a href="${safe(TIMETABLE_SOURCES[clubId])}" target="_blank" rel="noopener noreferrer">View club timetable ↗</a>` : '';
   $('classes-hint').textContent = hasRegular ? 'Included classes appear in the copied script. Fees and links are shared across each class type’s weekly groups.' : 'Add the classes you need, then enter their weekly times, fees and payment links.';
   $('add-class').innerHTML = `<span aria-hidden="true">＋</span> ${hasRegular ? 'Add a different class' : 'Add another class'}`;
 }
@@ -2088,7 +2163,7 @@ $('load-term-defaults').addEventListener('click', () => {
   if (emailMode === 'basic' || TERM_PRESETS[clubId]?.status !== 'ready') return;
   drafts[`${clubId}:${emailMode}`] = applyTermDefaults(clubId, emailMode, collectDraft(), { force: true });
   clearPreview(); clearErrors(); restoreDraft(); saveDraft();
-  $('term-preset-feedback').textContent = 'Spring 2027 setup loaded. Check the class totals, then create a new preview.';
+  $('term-preset-feedback').textContent = termPresetLoadedFeedback();
   $('term-preset-feedback').hidden = false;
   $('term-season').focus();
 });
