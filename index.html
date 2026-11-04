@@ -1050,13 +1050,14 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   const subject = personal(content.subject).trim();
   if (!subject || /[\r\n]/.test(subject) || subject.length > 240) throw new Error('Use a single-line subject of 1–240 characters after personalisation.');
   const intro = personal(content.body).trim();
-  const rows = [['Class', cls.name], ['Term', campaign.termName], ['Term date range', campaignDateText_(campaign.startDate) + ' – ' + campaignDateText_(campaign.endDate)]];
-  schedule.sessions.forEach(session => rows.push([WEEKDAYS[session.weekday], session.startTime + '–' + session.endTime + ' · ' + campaignDateText_(session.firstDate) + ' – ' + campaignDateText_(session.lastDate) + ' · ' + session.count + (session.count === 1 ? ' session' : ' sessions')]));
-  rows.push(['Total', schedule.sessionCount + (schedule.sessionCount === 1 ? ' session' : ' sessions') + ' across ' + schedule.teachingWeeks + (schedule.teachingWeeks === 1 ? ' teaching week' : ' teaching weeks')]);
+  const rows = [['Class', cls.name], ['Term dates', campaignDateText_(campaign.startDate) + ' – ' + campaignDateText_(campaign.endDate)], ['Total weeks', String(schedule.teachingWeeks)]];
   rows.push(['Total term fee', campaignMoney_(cls.fee)]);
   rows.push([mode === 'renewal' ? 'Renew by' : 'Accept by', deadline]);
   if (schedule.excludedDates.length) rows.push(['No class on', schedule.excludedDates.map(campaignDateText_).join(', ')]);
-  const card = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="' + design.panelBackground + '" style="margin:20px 0;border-collapse:separate;border:1px solid ' + design.panelBorder + ';border-left:4px solid ' + accent + ';border-radius:' + design.panelRadius + ';background:' + design.panelBackground + ';"><tr><td style="padding:20px 22px 2px;">' + rows.map(([label,value]) => campaignComponent_(design.paragraph, { PARAGRAPH: '<strong>' + esc(label) + ':</strong> ' + esc(value) })).join('') + '</td></tr></table>';
+  const card = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="' + design.panelBackground + '" style="margin:20px 0;border-collapse:separate;border:1px solid ' + accent + ';border-radius:' + design.panelRadius + ';background:' + design.panelBackground + ';"><tr><td style="padding:20px 22px 2px;">' + rows.map(([label,value]) => {
+    const text = '<strong>' + esc(label) + ':</strong> ' + esc(value);
+    return campaignComponent_(design.paragraph, { PARAGRAPH: mode === 'renewal' && label === 'Renew by' ? '<span style="color:#b91c1c;font-weight:700;">' + text + '</span>' : text });
+  }).join('') + '</td></tr></table>';
   const button = (text, url) => '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:0 0 18px;">' + campaignComponent_(design.button, { BUTTON_TEXT: esc(text), BUTTON_URL: esc(url) }) + '</td></tr></table>';
   let html = campaignTextHtml_(intro, design) + card;
   const plain = [intro, rows.map(([label,value]) => label + ': ' + value).join('\n')];
@@ -1196,13 +1197,16 @@ function migrateRegularTimetable(clubId, mode, draft = {}) {
 // Standard wording checked against the clubs' public pages and supplied email
 // examples on 4 November 2026. User instructions take precedence: SWL/Fulham
 // include IGA, Fulham has no uniform, and Apex BG is annual, not termly.
-// These first-use suggestions remain editable; campaign dates/fees stay separate.
-const CLUB_INFO_VERSION = 1;
+// The user’s latest viewing and first-term refund wording overrides older examples.
+// Suggestions remain editable; campaign dates/fees stay separate.
+const CLUB_INFO_VERSION = 2;
 const CLUB_INFO_FIELDS = ['paymentInstructions','membershipNote','membershipUrl','membershipButtonText','refundPolicy','policyUrl','policyButtonText','whatToBring','uniformUrl','uniformButtonText','location','mapUrl','parentViewing','informationUrl','informationButtonText'];
 const APEX_MEMBERSHIP_URL = 'https://mybg.british-gymnastics.org/';
 const APEX_MEMBERSHIP_LABEL = 'British Gymnastics membership';
 const APEX_OFFER_MEMBERSHIP = 'If {{child}} does not already have current British Gymnastics membership, please arrange it through My BG before attending. Membership is annual and separate from term fees.';
 const APEX_ANNUAL_REMINDER = 'If your annual British Gymnastics membership is due, please renew it through My BG.';
+const STANDARD_PARENT_VIEWING = 'Parent viewing is usually during the second-to-last class of term. We will send the details nearer the date.';
+const COMMITMENT_FREE_FIRST_TERM = 'Your first term is commitment-free. If you decide not to continue for any reason during the first term, we will refund all remaining classes that have not yet been attended.';
 const CLUB_STANDARD_INFO = {
   swl: {
     membershipNote: 'The price includes IGA membership.',
@@ -1215,25 +1219,21 @@ const CLUB_STANDARD_INFO = {
     informationUrl: 'https://www.swlgymnastics.co.uk',
     renewal: {
       paymentInstructions: 'Please complete payment by {{deadline}} to secure {{child}}’s place. If you would like to pay in cash, please reply before the deadline to arrange this.',
-      refundPolicy: 'Missed sessions for personal reasons are not refunded or replaced. If we cancel a class, we will explain the available options.',
-      parentViewing: 'Parents wait outside during regular classes. We will announce any designated watching sessions separately.'
+      refundPolicy: 'Missed sessions for personal reasons are not refunded or replaced. If we cancel a class, we will explain the available options.'
     },
     offer: {
-      paymentInstructions: 'Please reply to accept {{child}}’s place and complete payment by {{deadline}}. If you would like to pay in cash, reply so we can arrange this.',
-      refundPolicy: 'We cannot offer trial sessions. If your child is unhappy or unable to continue, we will refund any remaining classes that are not attended.',
-      parentViewing: 'New parents may watch the warm up for the first session, usually the first 5 to 10 minutes, then must wait outside during classes.'
+      paymentInstructions: 'Please reply to accept {{child}}’s place and complete payment by {{deadline}}. If you would like to pay in cash, reply so we can arrange this.'
     }
   },
   fulham: {
     membershipNote: 'The price includes IGA membership.',
     paymentInstructions: 'Please pay by {{deadline}} to secure {{child}}’s place. For cash payment, email us before the deadline, then bring the payment on the first day in an envelope labelled with your child’s name and class, and hand it to a Head Coach.',
     refundPolicy: 'If the club cancels a class because of unforeseen circumstances, a refund will be provided.',
-    whatToBring: 'There is no uniform to buy. A comfortable T-shirt with shorts or leggings is suitable; a leotard is optional. Tie long hair back, remove jewellery and bring water.',
+    whatToBring: 'We recommend a comfortable T-shirt with shorts or leggings, or a leotard. Tie long hair back, remove jewellery and bring water.',
     location: 'Hurlingham Academy, Peterborough Road, London SW6 3ED',
     mapUrl: 'https://g.page/Fulham-Gymnastics?share=',
-    parentViewing: 'Please contact us before the first session if you need information about parent viewing arrangements.',
     informationUrl: 'https://www.fulhamgymnastics.co.uk'
-    // No asserted Fulham viewing rule or current policy URL; no uniform to buy.
+    // No verified current policy URL or uniform purchase link.
   },
   apex: {
     paymentInstructions: 'Please pay by {{deadline}}. If you would like to pay in cash, reply before the deadline so we can arrange this and confirm the place.',
@@ -1242,15 +1242,13 @@ const CLUB_STANDARD_INFO = {
     mapUrl: 'https://maps.app.goo.gl/taQz43WMWx32epDM6',
     uniformUrl: 'https://www.apex-gymnastics.co.uk/uniform',
     uniformButtonText: 'View leotards & uniform',
-    parentViewing: 'Parents do not normally watch regular classes from the gym. We will announce any designated watching sessions separately.',
     policyUrl: 'https://www.apex-gymnastics.co.uk/club-rules',
     informationUrl: 'https://www.apex-gymnastics.co.uk',
     renewal: { refundPolicy: 'Please give written notice if you wish to withdraw. Refunds after the first term are considered individually and are not guaranteed. Missed classes for personal reasons are not refunded.' },
     offer: {
       membershipNote: APEX_OFFER_MEMBERSHIP,
       membershipUrl: APEX_MEMBERSHIP_URL,
-      membershipButtonText: APEX_MEMBERSHIP_LABEL,
-      refundPolicy: 'During the first term, you may withdraw by giving written notice. We will refund the classes in that term that have not yet been attended. Missed classes for personal reasons are not refunded.'
+      membershipButtonText: APEX_MEMBERSHIP_LABEL
     }
   },
   apexdance: {
@@ -1258,13 +1256,11 @@ const CLUB_STANDARD_INFO = {
     whatToBring: 'Wear fitted, secure dancewear that stays in place while moving: a leotard, fitted sports top with dance shorts, skort or leggings is suitable. Avoid loose or oversized tops, jeans and everyday clothing. Suitable dancewear in any colour is welcome; there is no need to replace clothing that is already appropriate. Tie hair back, remove jewellery and bring water.',
     location: 'Aspire Centre, 337 Merton Road, London SW18 5JU',
     mapUrl: 'https://maps.google.com/?q=337+Merton+Road+London+SW18+5JU',
-    parentViewing: 'Parents do not watch regular sessions from the studio. We will share details of designated watching sessions.',
     policyUrl: 'https://www.apexdanceclub.co.uk/club-rules',
     informationUrl: 'https://www.apexdanceclub.co.uk',
     uniformUrl: 'https://www.movedancewear.com/alegra-girls-shiny-hotpant-unitard-p2750/',
     uniformButtonText: 'Suggested dancewear (optional)',
-    renewal: { refundPolicy: 'After the first term, please give one full term’s written notice for each class. Any refund for unattended classes is discretionary. Missed classes for personal reasons are not refunded.' },
-    offer: { refundPolicy: 'During the first term, you may withdraw by emailing management@apexdanceclub.co.uk. Classes in that term that have not yet been attended will be refunded. Missed classes for personal reasons are not refunded.' }
+    renewal: { refundPolicy: 'After the first term, please give one full term’s written notice for each class. Any refund for unattended classes is discretionary. Missed classes for personal reasons are not refunded.' }
   }
 };
 
@@ -1274,7 +1270,11 @@ function getClubInfoDefaults(clubId, mode) {
   if (!club) throw new Error('Choose a recognised club for the standard information.');
   const values = { ...club, ...(club[mode] || {}) };
   const output = Object.fromEntries(CLUB_INFO_FIELDS.map(key => [key, values[key] || '']));
-  if (mode === 'offer') output.paymentInstructions = output.paymentInstructions.replace('{{deadline}}', 'the acceptance deadline shown above');
+  output.parentViewing = STANDARD_PARENT_VIEWING;
+  if (mode === 'offer') {
+    output.paymentInstructions = output.paymentInstructions.replace('{{deadline}}', 'the acceptance deadline shown above');
+    output.refundPolicy = COMMITMENT_FREE_FIRST_TERM;
+  }
   output.informationButtonText = 'More information';
   if (output.policyUrl) output.policyButtonText = 'Read club rules';
   return output;
@@ -1287,14 +1287,21 @@ function migrateClubInfo(clubId, mode, draft = {}) {
   const marker = draft.clubInfo;
   if (marker?.clubId === clubId && marker?.mode === mode && Number(marker.version) >= CLUB_INFO_VERSION) return draft;
   const campaign = { ...(draft.campaign || {}) };
-  // Drafts are stored by club and mode. If a caller intentionally copies one,
-  // replace only known auto-filled values; retain explicitly customised wording.
-  if (marker && (marker.clubId !== clubId || marker.mode !== mode)) {
-    for (const [key,value] of Object.entries(marker.defaults || {})) if (CLUB_INFO_FIELDS.includes(key) && campaign[key] === value) campaign[key] = '';
-  }
-  const annualMembershipReminder = clubId === 'apex' && mode === 'renewal' && draft.annualMembershipReminder === true && (!marker || (marker.clubId === clubId && marker.mode === mode));
+  const sameContext = marker?.clubId === clubId && marker?.mode === mode;
+  const annualMembershipReminder = clubId === 'apex' && mode === 'renewal' && draft.annualMembershipReminder === true && (!marker || sameContext);
   const defaults = { ...getClubInfoDefaults(clubId, mode), ...(annualMembershipReminder ? clubInfoReminderDefaults() : {}) };
-  for (const [key,value] of Object.entries(defaults)) if (clubInfoBlank(campaign[key])) campaign[key] = value;
+  for (const [key,value] of Object.entries(defaults)) {
+    if (!marker) {
+      // The first upgrade from the earlier app fills unused optional fields.
+      if (clubInfoBlank(campaign[key])) campaign[key] = value;
+      continue;
+    }
+    const previouslyDefault = Object.prototype.hasOwnProperty.call(marker.defaults || {}, key) && campaign[key] === marker.defaults[key];
+    // Upgrade only unchanged nonblank defaults. A blank in an already-migrated
+    // draft is deliberate and remains blank; custom copy remains untouched.
+    // Copying to another club/mode may replace its known blank default too.
+    if (!Object.prototype.hasOwnProperty.call(campaign, key) || (previouslyDefault && (!sameContext || !clubInfoBlank(campaign[key])))) campaign[key] = value;
+  }
   return { ...draft, campaign, annualMembershipReminder, clubInfo: { version: CLUB_INFO_VERSION, clubId, mode, defaults } };
 }
 
