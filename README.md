@@ -2,7 +2,7 @@
 
 [Open the public app](https://marxprogramming.github.io/gymnastics-email-builder/).
 
-A browser app for creating basic emails, term renewals and place offers for SWL Gymnastics, Fulham Gymnastics, Apex Gymnastics and Apex Dance Club. Configure the message, preview a personalised email, then copy one complete standalone Google Apps Script. SWL and Fulham retain their saved designs. Apex Gymnastics has a teal gradient header and white logo; Apex Dance uses its purple and gold website branding.
+A browser app for creating basic emails, term renewals, gentle renewal reminders and place offers for SWL Gymnastics, Fulham Gymnastics, Apex Gymnastics and Apex Dance Club. Configure the message, preview a personalised email, then copy one complete standalone Google Apps Script. SWL and Fulham retain their saved designs. Apex Gymnastics has a teal gradient header and white logo; Apex Dance uses its purple and gold website branding.
 
 The app runs entirely in the browser. It does not connect to Gmail or send messages. Drafts are stored in local storage on the current browser. The generated script sends through the Google account running it in Google Sheets.
 
@@ -10,7 +10,7 @@ The password screen remembers access for 90 days in the current browser. This is
 
 ## Use the app
 
-1. Choose the club and **Basic email**, **Renewal** or **Place offer**. Each club and mode keeps its own draft on this browser.
+1. Choose the club and **Basic email**, **Renewal** or **Place offer**. Within Renewal, choose **Main renewal** for the initial invitation or **Reminder** for a gentle follow-up. They share the same term, classes, fees, payment links, deadline and club information, while keeping separate subject and message drafts. Each club and mode keeps its own draft on this browser.
 2. For a basic email, enter a subject and body and optionally add a button with an HTTPS link. The template supplies the greeting and sign-off.
 3. New renewals and offers start with the club's **Spring 2027** dates and breaks. Existing customised drafts are preserved; **Load Spring 2027 defaults** applies the preset deliberately. You can still choose **Spring**, **Summer** or **Autumn** and edit the dates. The year comes from the first term date. The calendar lets you cancel individual dates or a full week and restore them later. Choose the renewal payment deadline. Offers start with a 48-hour acceptance window, which can be changed to another window or a fixed date.
 4. The club’s regular class types, days and times load automatically for both renewals and offers. SWL Gymnastics, Apex Gymnastics and Apex Dance Spring 2027 renewals also include the matching Square payment links. Review the total fee and payment link for each included class; supply links for other terms, offers and Fulham. You can deselect classes you do not need, edit a timetable when necessary, or use **Add a different class** for an extra class type. Several weekly groups can share one price/link. Combined programmes, such as SWL Senior Elite’s Wednesday and Saturday sessions, use one total fee. Add a separate class card when a weekday needs a different fee or payment link.
@@ -19,6 +19,8 @@ The password screen remembers access for 90 days in the current browser. This is
 7. Select **Copy Apps Script**, or download the `.gs` file. Any change requires a fresh preview before copying.
 
 Use `{{child}}` and `{{parent}}` in subject or message to personalise from each row. Renewals and offers also support `{{term}}`, `{{class}}`, `{{deadline}}`, `{{fee}}` and `{{club}}`. Preview sample names are Joseph for both parent and child. Desktop and phone previews are available.
+
+The Reminder starts with gentle renewal wording and thanks families who have already renewed. It uses the same email design and full renewal details. Select **Reminder → Create preview → Copy all-class script** to generate it; reminder downloads have `-renewal-reminder.gs` in the filename. Switching between Main renewal and Reminder preserves edits and requires a fresh preview. Reminders are sent manually to the rows you select; there is no automatic schedule or payment-status check.
 
 ## Regular timetable defaults
 
