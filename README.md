@@ -12,9 +12,9 @@ The password screen remembers access for 90 days in the current browser. This is
 
 1. Choose the club and **Basic email**, **Renewal** or **Place offer**. Each club and mode keeps its own draft on this browser.
 2. For a basic email, enter a subject and body and optionally add a button with an HTTPS link. The template supplies the greeting and sign-off.
-3. For renewals and offers, choose **Spring**, **Summer** or **Autumn** and enter the start/end dates. The year comes from the first term date. The calendar lets you cancel individual dates or a full week and restore them later. Choose the renewal payment deadline. Offers start with a 48-hour acceptance window, which can be changed to another window or a fixed date.
+3. New renewals and offers start with the club's **Spring 2027** dates and breaks. Existing customised drafts are preserved; **Load Spring 2027 defaults** applies the preset deliberately. You can still choose **Spring**, **Summer** or **Autumn** and edit the dates. The year comes from the first term date. The calendar lets you cancel individual dates or a full week and restore them later. Choose the renewal payment deadline. Offers start with a 48-hour acceptance window, which can be changed to another window or a fixed date.
 4. The club’s regular class types, days and times load automatically for both renewals and offers. Enter the total term fee and payment link for each included class. You can deselect classes you do not need, edit a timetable when necessary, or use **Add a different class** for an extra class type. Several weekly groups can share one price/link. Combined programmes, such as SWL Senior Elite’s Wednesday and Saturday sessions, use one total fee. Add a separate class card when a weekday needs a different fee or payment link.
-5. Each club’s standard membership information, payment and cancellation wording, clothing guidance, venue, Google Maps link, parent-viewing information and website links are built in. Open **Club information** to review or edit them when needed. SWL and Fulham state that IGA membership is included; Fulham has no uniform link. Apex Gymnastics offers include annual British Gymnastics sign-up information; renewals leave it out unless the annual reminder is switched on. Existing customised wording, prices, payment links and timetable edits are preserved when drafts are upgraded. Historical term dates and prices are not reused as defaults.
+5. Each club’s standard membership information, payment and cancellation wording, clothing guidance, venue, Google Maps link, parent-viewing information and website links are built in. Open **Club information** to review or edit them when needed. SWL and Fulham offers include £40 annual IGA membership on top of tuition in the displayed total. Fulham membership is payable when joining and at September renewal; it has no uniform link. Apex Gymnastics offers include annual British Gymnastics sign-up information; renewals leave it out unless the annual reminder is switched on. Existing customised wording, prices, payment links and timetable edits are preserved when drafts are upgraded.
 6. Choose the class to preview, then select **Create preview**. The script contains every configured class, not just the preview choice. The displayed dates and session counts reflect exclusions; fees are the total amounts you enter and are never automatically prorated.
 7. Select **Copy Apps Script**, or download the `.gs` file. Any change requires a fresh preview before copying.
 
@@ -30,6 +30,43 @@ Class types and weekly session times were checked against the clubs’ official 
 - [Fulham Gymnastics](https://www.fulhamgymnastics.co.uk/renewing): Beginners, Intermediate and Advanced on Mondays.
 
 Timetables are built into the app rather than fetched when sending. Term dates, exclusions, prices, payment links and deadlines remain configurable. Every email type uses the same club header, logo, typography, button styling and footer; renewal and offer details sit inside that shared design.
+
+## Spring 2027 defaults
+
+The club owner supplied these term dates. Fulham's excluded Monday also matches [its venue school's half-term dates](https://www.thehurlinghamacademy.org.uk/Parents/Term-Dates).
+
+| Club | Term window | No classes | Teaching weeks per weekly group |
+|---|---|---|---:|
+| SWL Gymnastics | 4 January–21 March 2027 | None | 11 |
+| Fulham Gymnastics | 11 January–21 March 2027; last Monday class 15 March | 15 February | 9 |
+| Apex Gymnastics | 7 January–18 March 2027 | 18 February | 10 |
+| Apex Dance Club | 8 January–20 March 2027; Friday groups finish 19 March | 19 and 20 February | 10 |
+
+Spring defaults fill new or empty advanced drafts. Existing matching Spring drafts receive missing standard fees once; other terms and customised dates are preserved. **Load Spring 2027 defaults** replaces dates, breaks and available standard-class fees, while keeping payment links, custom classes and timetable edits, notes and the chosen deadline. The total remains editable and is not recalculated when a date is later cancelled.
+
+SWL prices use its published approximate weekly figures, as approved by the club owner. Fulham uses the same weekly rates for the matching class types at the owner's request. Apex Gymnastics rates were supplied by the owner. Apex Dance rates come from [its published timetable](https://www.apexdanceclub.co.uk/timetable1). Alternative weekly groups share the displayed price per group; SWL Senior Elite's two weekly sessions form one combined programme and are charged only once per teaching week.
+
+| Club / class | Weekly rate | Spring renewal | Spring offer |
+|---|---:|---:|---:|
+| SWL Beginners | £20 | £220 | £260 |
+| SWL Intermediate | £23 | £253 | £293 |
+| SWL Advanced | £26 | £286 | £326 |
+| SWL Junior Advanced Class | £26 | £286 | £326 |
+| SWL Junior Squad | £32 | £352 | £392 |
+| SWL Floor & Vault Squad | £36 | £396 | £436 |
+| SWL Senior Elite, combined programme | £73 | £803 | £843 |
+| Fulham Beginners | £20 | £180 | £220 |
+| Fulham Intermediate | £23 | £207 | £247 |
+| Fulham Advanced | £26 | £234 | £274 |
+| Apex Gymnastics Beginners | £15 | £150 | £150 |
+| Apex Gymnastics Intermediate | £17 | £170 | £170 |
+| Apex Gymnastics Advanced | £20 | £200 | £200 |
+| Apex Gymnastics Two-Hour Advanced | £34 | £340 | £340 |
+| Apex Dance Junior Acro | £14 | £140 | £140 |
+| Apex Dance Intermediate Acro | £16 | £160 | £160 |
+| Apex Dance Advanced Acro | £16 | £160 | £160 |
+
+SWL/Fulham Offer totals include £40 membership once. These Spring renewal totals add no membership charge. Apex Gymnastics British Gymnastics membership remains separate. Payment links are deliberately left for the user to supply.
 
 ## Standard club information
 
