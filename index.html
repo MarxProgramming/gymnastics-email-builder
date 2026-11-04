@@ -149,7 +149,7 @@
         <div class="export-panel panel"><div class="export-heading"><span class="export-icon" aria-hidden="true">↗</span><div><h3>Ready for Google Sheets</h3><p id="export-description">Create your preview to get the complete script.</p></div></div><div class="export-actions"><button class="primary" id="copy-script" type="button" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg><span>Copy Apps Script</span></button><button class="secondary" id="download-script" type="button" disabled aria-label="Download Apps Script"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"></path></svg><span>Download</span></button></div><p class="export-feedback" id="export-feedback" role="status"></p><div id="copy-fallback" hidden><label for="script-output">Copy the complete script below</label><textarea id="script-output" readonly spellcheck="false" rows="6"></textarea><p class="field-hint">Select all, then copy. You can also use Download.</p></div></div>
       </section>
     </div>
-    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b> in your sheet. In a new project, replace the starter code with your copied script, save, then reload the sheet. Use one club script per project; take care to preserve any existing scripts.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want, then choose your club’s email menu → <b>Send selected emails</b>. For a renewal or offer, choose the class for those rows when asked. It sends straight away to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>Use <b>Check selected rows (no email)</b> first to see which headings were found and how many selected rows are ready to send. For renewals and offers, choose a class when asked. This check sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
+    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b> in your sheet. In a new project, replace the starter code with your copied script, save, then reopen or refresh the sheet. Your club’s email menu appears automatically whenever the sheet opens. You don’t need to run anything in the script editor. Use one club script per project; take care to preserve any existing scripts.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want. For a basic email, choose your club’s email menu → <b>Send selected emails</b>. For a renewal or offer, choose <b>Choose class &amp; send selected rows</b>, then pick the class for those highlighted rows. It sends straight away to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>For renewals and offers, the class selected in this app is only a preview. Your copied script includes all included classes; choose the class in Sheets each time you send.</p><p>To review rows before sending, use <b>Check selected rows (no email)</b> for a basic email, or <b>Choose class &amp; check rows (no email)</b> for a renewal or offer. The check shows which headings were found and how many selected rows are ready. It sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
   </main>
   <footer><span>Made for your clubs. Ready for your next message.</span><span>SWL · Fulham · Apex · Apex Dance</span></footer>
   </div>
@@ -1597,6 +1597,24 @@ function stringLiteral(text) {
   return JSON.stringify(text).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 }
 
+function putSpreadsheetMenuFirst(source, advanced = false) {
+  const matches = source.match(/^function onOpen\(\) \{[\s\S]*?^\}\n\n/gm);
+  if (!matches || matches.length !== 1) throw new Error('The spreadsheet menu could not be prepared. Refresh the app and copy a new script.');
+  let menu = matches[0];
+  let remainder = source.replace(menu, '');
+  if (advanced) {
+    menu = menu.replace("'Send selected emails'", "'Choose class & send selected rows'")
+      .replace("'Check selected rows (no email)'", "'Choose class & check rows (no email)'");
+    remainder = remainder.replace('emails > Send selected emails', 'emails > Choose class & send selected rows')
+      .replace(' * Sends immediately, one selected row at a time. No confirmation.', ' * Choose the class in the sheet dialog; then each selected row sends in turn.');
+  }
+  // Keep the document annotation first, and make onOpen the first named function.
+  // It creates the menu when this bound spreadsheet opens; no setup/run is needed.
+  const headerEnd = remainder.indexOf('*/') + 2;
+  if (headerEnd < 2) throw new Error('The spreadsheet script header is missing.');
+  return remainder.slice(0, headerEnd) + '\n\n' + menu + remainder.slice(headerEnd).replace(/^\n\n/, '');
+}
+
 async function generateScript(clubId, options) {
   const mode = options?.mode || 'basic';
   if (!['basic', 'renewal', 'offer'].includes(mode)) throw new Error('Choose Basic, Renewal or Offer.');
@@ -1621,8 +1639,8 @@ async function generateScript(clubId, options) {
   const generated = source.slice(0, functionStart) + contentFunction + source.slice(functionEnd);
   // Send-only access is sufficient. MailApp supports the same HTML, inline image
   // and sender-name options without requesting access to the user's inbox.
-  return generated.replace('GmailApp.sendEmail(person.email,email.subject,email.plainBody,{',
-    'MailApp.sendEmail(person.email,email.subject,email.plainBody,{');
+  return putSpreadsheetMenuFirst(generated.replace('GmailApp.sendEmail(person.email,email.subject,email.plainBody,{',
+    'MailApp.sendEmail(person.email,email.subject,email.plainBody,{'));
 }
 
 async function renderPreview(clubId, options, names = { child: 'Joseph', parent: 'Joseph' }) {
@@ -1724,7 +1742,7 @@ function runClassCampaign_(dryRun) {
   const capturedSource = `  const sheet = capturedSelection ? capturedSelection.sheet : ss.getActiveSheet();
   const selection = capturedSelection ? { getRanges: () => capturedSelection.ranges.map(range => ({ getRow: () => range.first, getLastRow: () => range.last })) } : ss.getSelection().getActiveRangeList();`;
   source = source.slice(0, selectionStart) + capturedSource + source.slice(selectionStart + oldSelection.length);
-  return source;
+  return putSpreadsheetMenuFirst(source, true);
 }
 
 
@@ -1970,7 +1988,7 @@ function updateDraft(persist = true) {
     const isCurrent = fingerprint() === previewFingerprint;
     $('copy-script').disabled = !isCurrent; $('download-script').disabled = !isCurrent;
     $('preview-state').classList.toggle('stale', !isCurrent);
-    $('preview-state').textContent = isCurrent ? (emailMode === 'basic' ? 'This preview matches your current message.' : 'Preview one class; the copied script includes every included class.') : 'You’ve made changes. Create a new preview before copying.';
+    $('preview-state').textContent = isCurrent ? (emailMode === 'basic' ? 'This preview matches your current message.' : 'This class is only a preview; the copied script includes every included class.') : 'You’ve made changes. Create a new preview before copying.';
     $('export-description').textContent = isCurrent ? (emailMode === 'basic' ? 'Your complete script is ready to copy and paste.' : `${compileClasses().length} class options in one script. Choose the class in Sheets.`) : 'Update your preview to include your latest changes.';
     $('create-preview').querySelector('span').textContent = isCurrent ? 'Create preview' : 'Update preview';
   }
@@ -2216,7 +2234,7 @@ for (const view of ['desktop', 'mobile']) $(`${view}-view`).addEventListener('cl
   for (const id of ['desktop', 'mobile']) { $(`${id}-view`).classList.toggle('selected', view === id); $(`${id}-view`).setAttribute('aria-pressed', String(view === id)); }
 });
 function scriptIsCurrent() { return Boolean(currentScript) && fingerprint() === previewFingerprint; }
-function copiedMessage() { return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script in your spreadsheet.' : 'Included classes copied. Paste into Apps Script, reload your sheet, select rows, then choose their class when sending.'; }
+function copiedMessage() { return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows and choose Send selected emails.' : 'All included classes copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows, use “Choose class & send selected rows”, then pick their class.'; }
 $('copy-script').addEventListener('click', async () => {
   if (!scriptIsCurrent()) return;
   try {
@@ -2235,7 +2253,7 @@ $('download-script').addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([currentScript], { type: 'text/plain;charset=utf-8' }));
   const link = document.createElement('a'); link.href = url; link.download = `${selectedClub().name.replace(/\s+/g, '-')}-${emailMode}.gs`; document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
-  $('export-feedback').textContent = 'Downloaded. Open the .gs file and copy its contents into Apps Script.';
+  $('export-feedback').textContent = 'Downloaded. Open the .gs file and paste its contents into Extensions → Apps Script. Save, then reopen the sheet; your club menu appears automatically.';
 });
 document.querySelector('.help-link').addEventListener('click', () => { $('how-to-use').open = true; });
 
