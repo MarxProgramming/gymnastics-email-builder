@@ -908,6 +908,40 @@ function escapeApexDanceHtml_(value) {
 
 const WEEKDAYS = Object.freeze(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
 
+function campaignSessionPosition_(session) {
+  const raw = session?.weekday;
+  const day = typeof raw === 'string' && !/^\d$/.test(raw) ? WEEKDAYS.findIndex(value => value.toLowerCase() === raw.toLowerCase()) : Number(raw);
+  const startTime = String(session?.startTime || '');
+  const endTime = String(session?.endTime || '');
+  const valid = raw !== '' && raw != null && Number.isInteger(day) && day >= 0 && day <= 6 && /^([01]\d|2[0-3]):[0-5]\d$/.test(startTime) && /^([01]\d|2[0-3]):[0-5]\d$/.test(endTime) && endTime > startTime;
+  return { day, rank: valid ? (day + 6) % 7 : 7, time: valid ? startTime : '24:00' };
+}
+function campaignSortedSessions_(sessions) {
+  return (Array.isArray(sessions) ? sessions : []).map((session, index) => ({ session, index, position: campaignSessionPosition_(session) }))
+    .sort((a, b) => a.position.rank - b.position.rank || a.position.time.localeCompare(b.position.time) || a.index - b.index).map(item => item.session);
+}
+function sortCampaignClasses(classes) {
+  return (Array.isArray(classes) ? classes : []).map((cls, index) => ({ cls, index, position: campaignSessionPosition_(campaignSortedSessions_(cls.sessions)[0]) }))
+    .sort((a, b) => a.position.rank - b.position.rank || a.position.time.localeCompare(b.position.time) || a.index - b.index).map(item => item.cls);
+}
+function getCampaignClassLabel(cls) {
+  const name = String(cls.name || '').trim();
+  const sessions = campaignSortedSessions_(cls.sessions);
+  if (!sessions.length) return name;
+  const schedule = sessions.map(session => {
+    const position = campaignSessionPosition_(session);
+    if (position.rank === 7) return 'Day/time to choose';
+    return WEEKDAYS[position.day] + ' ' + session.startTime + '–' + session.endTime;
+  }).join(' + ');
+  if (sessions.length === 1) return name.endsWith(schedule) ? name : name + ' — ' + schedule;
+  const detail = sessions.length + ' sessions/week: ' + schedule;
+  return name.endsWith(detail) ? name : name + ' — ' + detail;
+}
+function campaignFeeCoverage_(cls) {
+  const count = cls.sessions?.length || 0;
+  return count === 2 ? ' (covers both sessions)' : count > 2 ? ' (covers all ' + count + ' sessions)' : '';
+}
+
 function campaignDate_(value, label) {
   const text = String(value || '').trim();
   const date = /^\d{4}-\d{2}-\d{2}$/.test(text) ? new Date(text + 'T00:00:00.000Z') : null;
@@ -1023,7 +1057,7 @@ function validateCampaign(mode, input = {}) {
     if (!schedule.sessionCount || schedule.sessions.some(session => !session.count)) throw new Error('The date range and exclusions leave a weekly session with no dates in ' + name + '.');
     return item;
   });
-  const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, offerExpiryHours, classes };
+  const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, offerExpiryHours, classes: sortCampaignClasses(classes) };
   for (const key of ['additionalInfo','paymentInstructions','membershipNote','refundPolicy','whatToBring','location','parentViewing','informationButtonText','paymentButtonText','membershipButtonText','uniformButtonText','policyButtonText']) output[key] = String(input[key] || '').trim();
   for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(input[key], key.replace('Url', '') + ' button');
   return output;
@@ -1053,8 +1087,8 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   const subject = personal(content.subject).trim();
   if (!subject || /[\r\n]/.test(subject) || subject.length > 240) throw new Error('Use a single-line subject of 1–240 characters after personalisation.');
   const intro = personal(content.body).trim();
-  const rows = [['Class', cls.name], ['Term dates', campaignDateText_(campaign.startDate) + ' – ' + campaignDateText_(campaign.endDate)], ['Total weeks', String(schedule.teachingWeeks)]];
-  rows.push(['Total term fee', campaignMoney_(cls.fee)]);
+  const rows = [['Class', getCampaignClassLabel(cls)], ['Term dates', campaignDateText_(campaign.startDate) + ' – ' + campaignDateText_(campaign.endDate)], ['Total weeks', String(schedule.teachingWeeks)]];
+  rows.push(['Total term fee', campaignMoney_(cls.fee) + campaignFeeCoverage_(cls)]);
   rows.push([mode === 'renewal' ? 'Renew by' : 'Accept by', deadline]);
   if (schedule.excludedDates.length) rows.push(['No class on', schedule.excludedDates.map(campaignDateText_).join(', ')]);
   const card = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="' + design.panelBackground + '" style="margin:20px 0;border-collapse:separate;border:1px solid ' + accent + ';border-radius:' + design.panelRadius + ';background:' + design.panelBackground + ';"><tr><td style="padding:20px 22px 2px;">' + rows.map(([label,value]) => {
@@ -1100,7 +1134,7 @@ function mergeCampaignEmail(shell, details) {
   return { subject: details.subject, htmlBody: shell.htmlBody.replace(pattern, () => details.html), plainBody: shell.plainBody.replace(marker, () => details.plain) };
 }
 
-const CAMPAIGN_RUNTIME_SOURCE = 'const WEEKDAYS = ' + JSON.stringify(WEEKDAYS) + ';\n' + [campaignDate_,campaignRange_,campaignExcludedDates_,campaignSessions_,getClassSchedule,campaignDateText_,campaignMoney_,campaignEscapeHtml_,campaignPersonalise_,campaignComponent_,campaignTextHtml_,renderCampaignContent,mergeCampaignEmail].map(fn => fn.toString()).join('\n\n');
+const CAMPAIGN_RUNTIME_SOURCE = 'const WEEKDAYS = ' + JSON.stringify(WEEKDAYS) + ';\n' + [campaignSessionPosition_,campaignSortedSessions_,sortCampaignClasses,getCampaignClassLabel,campaignFeeCoverage_,campaignDate_,campaignRange_,campaignExcludedDates_,campaignSessions_,getClassSchedule,campaignDateText_,campaignMoney_,campaignEscapeHtml_,campaignPersonalise_,campaignComponent_,campaignTextHtml_,renderCampaignContent,mergeCampaignEmail].map(fn => fn.toString()).join('\n\n');
 
 // Regular weekly classes. Fees, payment links, term dates and deadlines are
 // deliberately separate so each message uses the user's current information.
@@ -1707,11 +1741,9 @@ function runClassCampaign_(dryRun) {
   if (!selection) { ss.toast('Highlight the data rows you want to email first.', 'Class emails', 15); return; }
   // Snapshot the target sheet and selected row boundaries before the prompt.
   const captured = { sheet, ranges: selection.getRanges().map(range => ({ first: range.getRow(), last: range.getLastRow() })) };
-  const classes = EMAIL_CAMPAIGN.campaign.classes;
+  const classes = sortCampaignClasses(EMAIL_CAMPAIGN.campaign.classes);
   const choices = classes.map((cls, index) => {
-    const schedule = cls.sessions.map(session => WEEKDAYS[session.weekday] + ' ' + session.startTime + '–' + session.endTime).join(' + ');
-    const label = cls.name.endsWith(schedule) ? cls.name : cls.name + ' — ' + schedule;
-    return (index + 1) + '. ' + label + ' — ' + campaignMoney_(cls.fee);
+    return (index + 1) + '. ' + getCampaignClassLabel(cls) + ' — ' + campaignMoney_(cls.fee) + campaignFeeCoverage_(cls);
   }).join('\\n');
   const ui = SpreadsheetApp.getUi();
   // Ui.prompt suspends Apps Script execution, so the sender acquires its lock AFTER this choice.
@@ -1863,12 +1895,12 @@ function hasCardContent(card) {
   return card.enabled !== false && Boolean(card.name.trim() || card.fee.trim() || card.paymentUrl.trim() || card.feeNote.trim() || card.combined || card.sessions.some(session => session.weekday !== '' || session.startTime || session.endTime));
 }
 function compileClasses() {
-  return classCards.filter(hasCardContent).flatMap(card => {
+  return sortCampaignClasses(classCards.filter(hasCardContent).flatMap(card => {
     const base = { fee: card.fee.trim(), paymentUrl: card.paymentUrl.trim(), feeNote: card.feeNote.trim() };
     const sessions = card.sessions.map(session => ({ weekday: session.weekday === '' ? null : Number(session.weekday), startTime: session.startTime, endTime: session.endTime }));
     if (card.combined) return [{ ...base, id: card.id, name: card.name.trim(), sessions }];
     return sessions.map((session, index) => ({ ...base, id: `${card.id}-${card.sessions[index].id}`, name: card.name.trim() ? `${card.name.trim()}${dayName(session.weekday) ? ` — ${dayName(session.weekday)} ${session.startTime}${session.endTime ? `–${session.endTime}` : ''}` : ''}`.trim() : '', sessions: [session] }));
-  });
+  }));
 }
 function campaignConfig() {
   const campaign = readCampaignFields(true);
@@ -2120,7 +2152,7 @@ function updateSchedules(preferredId = $('preview-class').value) {
       return `<details class="session-dates"><summary><strong>${safe(heading)}</strong><span>${safe(scheduleSummary(schedule))}</span></summary>${included.length ? `<p>${included.map(shortDate).join(' · ')}</p>` : ''}${cancelled.length ? `<p class="cancelled-dates">Cancelled: ${[...new Set(cancelled)].sort().map(shortDate).join(' · ')}</p>` : ''}</details>`;
     }).join('') || '<p>Add a session to calculate the dates.</p>';
   }
-  const select = $('preview-class'); select.innerHTML = options.length ? options.map((item, index) => `<option value="${safe(item.id)}">${safe(item.name || `Class ${index + 1}`)}</option>`).join('') : '<option value="">Add a class to preview</option>';
+  const select = $('preview-class'); select.innerHTML = options.length ? options.map((item, index) => `<option value="${safe(item.id)}">${safe(item.name ? getCampaignClassLabel(item) : `Class ${index + 1}`)}</option>`).join('') : '<option value="">Add a class to preview</option>';
   if (options.some(item => item.id === preferredId)) select.value = preferredId;
   const choice = options.find(item => item.id === select.value);
   $('preview-class-summary').textContent = choice ? scheduleSummary(scheduleFor(choice, campaign)) : '';
