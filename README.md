@@ -12,9 +12,9 @@ The password screen remembers access for 90 days in the current browser. This is
 
 1. Choose the club and **Basic email**, **Renewal** or **Place offer**. Each club and mode keeps its own draft on this browser.
 2. For a basic email, enter a subject and body and optionally add a button with an HTTPS link. The template supplies the greeting and sign-off.
-3. For renewals and offers, set the term name and start/end dates. The calendar lets you cancel individual dates or a full week and restore them later. Enter the payment deadline; offers can instead use an acceptance window in hours.
+3. For renewals and offers, choose **Spring**, **Summer** or **Autumn** and enter the start/end dates. The year comes from the first term date. The calendar lets you cancel individual dates or a full week and restore them later. Choose the renewal payment deadline. Offers start with a 48-hour acceptance window, which can be changed to another window or a fixed date.
 4. The club’s regular class types, days and times load automatically for both renewals and offers. Enter the total term fee and payment link for each included class. You can deselect classes you do not need, edit a timetable when necessary, or use **Add a different class** for an extra class type. Several weekly groups can share one price/link. Combined programmes, such as SWL Senior Elite’s Wednesday and Saturday sessions, use one total fee. Add a separate class card when a weekday needs a different fee or payment link.
-5. Add any extra information, membership note, payment instructions or offer details. Dates, fees, links and policies from old example campaigns are not automatically treated as current. All four clubs have a regular timetable built in. Existing saved prices, payment links and custom timetable edits are preserved when drafts are upgraded.
+5. Each club’s standard membership information, payment and cancellation wording, clothing guidance, venue, Google Maps link, parent-viewing information and website links are built in. Open **Club information** to review or edit them when needed. SWL and Fulham state that IGA membership is included; Fulham has no uniform link. Apex Gymnastics offers include annual British Gymnastics sign-up information; renewals leave it out unless the annual reminder is switched on. Existing customised wording, prices, payment links and timetable edits are preserved when drafts are upgraded. Historical term dates and prices are not reused as defaults.
 6. Choose the class to preview, then select **Create preview**. The script contains every configured class, not just the preview choice. The displayed dates and session counts reflect exclusions; fees are the total amounts you enter and are never automatically prorated.
 7. Select **Copy Apps Script**, or download the `.gs` file. Any change requires a fresh preview before copying.
 
@@ -30,6 +30,14 @@ Class types and weekly session times were checked against the clubs’ official 
 - [Fulham Gymnastics](https://www.fulhamgymnastics.co.uk/renewing): Beginners, Intermediate and Advanced on Mondays.
 
 Timetables are built into the app rather than fetched when sending. Term dates, exclusions, prices, payment links and deadlines remain configurable. Every email type uses the same club header, logo, typography, button styling and footer; renewal and offer details sit inside that shared design.
+
+## Standard club information
+
+Club details were checked on 4 November 2026 against the supplied email examples and the clubs’ public information pages: [SWL rules](https://www.swlgymnastics.co.uk/club-rules), [Fulham FAQ](https://www.fulhamgymnastics.co.uk/faq), [Fulham renewal information](https://www.fulhamgymnastics.co.uk/renewing), [Apex Gymnastics rules](https://www.apex-gymnastics.co.uk/club-rules) and [Apex Dance policies](https://www.apexdanceclub.co.uk/club-rules). Each mode has its own payment and cancellation wording. SWL offers retain the supplied example’s refund and first-session viewing wording. SWL’s location uses its current public West Hill address, matching the existing email footer.
+
+Apex Dance includes an optional dancewear suggestion from the supplied clothing email; it does not require buying a uniform. Fulham has no uniform button. No verified Fulham viewing restriction was found, so its default invites parents to contact the club about viewing arrangements. Standard information remains editable and is copied into the generated script, not fetched when sending.
+
+A one-time upgrade fills empty standard-information fields in older drafts. Later edits and deliberate removals are kept. The optional annual British Gymnastics reminder is specific to Apex Gymnastics Renewal; it changes only standard reminder wording, preserving separately customised membership text and links.
 
 ## Use the script in Google Sheets
 

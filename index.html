@@ -48,6 +48,8 @@
 @media(min-width:761px) and (max-height:700px){.advanced-mode .preview-column{position:static}}
 /* Regular timetables: commercial details first; optional schedule editing. */
 .regular-classes-note{font-size:10px;line-height:1.8;background:var(--accent-soft);color:#7b6b85;padding:12px 14px;border-radius:7px;margin:0 0 14px}.regular-classes-note a{display:inline-block;color:var(--accent);text-underline-offset:3px;margin-top:3px}.class-selection-controls{display:flex;justify-content:flex-end;gap:14px;margin:0 0 12px}.class-selection-controls button{border:0;background:none;font-size:10px;color:#8a9a77;padding:3px 0;text-decoration:underline;text-underline-offset:3px}.class-selection-controls button:hover{color:var(--ink)}.class-editor-heading{margin-bottom:9px}.include-class{display:flex;align-items:center;gap:6px;white-space:nowrap;margin:0!important;cursor:pointer;color:#7f906d;font-size:10px!important}.include-class input{width:13px;height:13px;margin:0}.compact-timetable{font-size:9px;color:#9aa88b;line-height:1.8;margin:0 0 15px;overflow-wrap:anywhere}.class-payment-grid{display:grid;grid-template-columns:minmax(80px,.7fr) minmax(0,1.7fr);gap:10px}.class-payment-grid .form-field{min-width:0;margin-bottom:0}.class-payment-grid input{height:40px;font-size:11px}.compact-fee-hint{font-size:9px!important;margin:8px 0 12px!important;line-height:1.7}.edit-class-details{border-top:1px solid #e6eadf;margin-top:13px;padding:11px 0 0}.edit-class-details>summary,.class-dates-details>summary{font-size:10px;cursor:pointer;list-style:none;color:#899b74;line-height:1.6}.edit-class-details>summary::-webkit-details-marker,.class-dates-details>summary::-webkit-details-marker{display:none}.edit-class-details>summary:after,.class-dates-details>summary:after{content:'＋';float:right;font-size:13px;color:#a2af93}.edit-class-details[open]>summary:after,.class-dates-details[open]>summary:after{content:'−'}.edit-class-body{padding-top:16px}.class-dates-details{border-top:1px solid #e6eadf;margin-top:11px;padding-top:11px}.class-dates-details>summary small{display:block;font-size:9px;color:#a4af98;margin-top:4px}.class-dates-details .class-schedule{border-top:0;padding-top:8px}.class-excluded{background:#f8f9f5;border-style:dashed}.class-excluded .class-editor-heading h4{color:#a0aa94}.class-excluded .compact-timetable{margin-bottom:0;color:#afb8a5}.class-excluded .class-number{background:#eef0e9;color:#acb49f}@media(max-width:390px){.class-payment-grid{grid-template-columns:85px minmax(0,1fr);gap:8px}.class-payment-grid input{font-size:10px}.include-class{font-size:9px!important;gap:5px}}
+/* Essential term controls with the standard email details tucked away. */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.term-choice{display:flex;align-items:center;gap:10px}.term-choice select{flex:1}.term-year{display:flex;align-items:center;justify-content:center;min-height:43px;min-width:65px;padding:0 11px;background:#f3f5ed;border:1px solid #e4e8dc;color:#929f81;border-radius:7px;font-size:11px;white-space:nowrap}.deadline-controls{margin:2px 0 19px}.deadline-label{display:flex;align-items:center;justify-content:space-between;gap:12px}.deadline-label label{font-size:11px}.deadline-label>span{font-size:9px;color:#a2ae95}.deadline-controls .field-pair{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}.deadline-controls select,.deadline-controls input{font-size:11px}.offer-deadline-details{margin:0 0 18px;border:1px solid #e5e8de;border-radius:7px;background:#fbfcf8}.offer-deadline-details>summary{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:12px;list-style:none;cursor:pointer;font-size:10px;color:#7f906b;line-height:1.6}.offer-deadline-details>summary::-webkit-details-marker{display:none}.offer-deadline-details>summary>span{font-size:9px;color:#a0ad8f;text-align:right}.offer-deadline-body{padding:2px 12px 0}.offer-deadline-body label{font-size:10px}.offer-deadline-body .form-field{margin-bottom:15px}.extra-details>summary{flex-wrap:wrap;gap:7px;font-size:12px}.extra-details>summary>span{font-size:9px}.extra-details #message-fields{border-bottom:1px solid #e5e9de;padding:10px 0 5px;margin-bottom:20px}.extra-details #message-fields textarea{min-height:125px}.membership-reminder-option{padding:12px;border:1px solid #e3e7da;border-radius:7px;background:#f4f7ee;margin:0 0 21px}.membership-reminder-option .combine-label{margin-bottom:0!important}.advanced-mode .extra-details{margin-top:3px}.advanced-mode #basic-message-slot:empty{display:none}.advanced-mode .mode-explanation{margin-bottom:20px}@media(max-width:390px){.deadline-controls .field-pair{grid-template-columns:1fr}.deadline-controls select,.deadline-controls input{font-size:12px}.term-year{font-size:10px;min-width:52px;padding:0 8px}.extra-details>summary{font-size:11px}.extra-details>summary>span{font-size:8px}}
 
 </style>
   
@@ -88,11 +90,19 @@
           </div></fieldset>
           <fieldset class="club-field"><legend>Choose your club</legend><div class="club-options" id="club-options"></div></fieldset>
           <fieldset id="advanced-fields" class="advanced-fields" hidden disabled>
-            <p class="mode-explanation">Set up your term and classes once. Your script includes the classes you choose.</p>
+            <p class="mode-explanation">Choose the term and dates, then add your class fees and payment links. The club’s usual information is included for you.</p>
             <section class="setup-section" aria-labelledby="term-heading">
               <div class="section-label"><span>1</span><h3 id="term-heading">Term &amp; dates</h3></div>
-              <div class="form-field"><label for="term-name">Term name</label><input id="term-name" type="text" placeholder="e.g. Spring term" autocomplete="off" maxlength="100"></div>
+              <div class="form-field"><label for="term-season">Term</label><div class="term-choice"><select id="term-season" aria-describedby="term-year-hint"><option value="">Choose term</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Autumn">Autumn</option></select><span id="term-year" class="term-year">Year from dates</span></div><input id="term-name" type="hidden"><p class="field-hint after-input" id="term-year-hint">The year comes from the first date of term.</p></div>
               <div class="field-pair"><div class="form-field"><label for="term-start">First date of term</label><input id="term-start" type="date"></div><div class="form-field"><label for="term-end">Last date of term</label><input id="term-end" type="date"></div></div>
+              <div id="renewal-deadline-controls" class="deadline-controls" hidden>
+                <label for="payment-deadline">Renew and pay by</label><input id="payment-deadline" type="date"><p class="field-hint after-input">Choose the deadline for this term.</p>
+              </div>
+              <details id="offer-deadline-details" class="offer-deadline-details" hidden><summary>Offer acceptance window <span id="offer-deadline-summary">48 hours after receipt</span></summary><div class="offer-deadline-body">
+                <div class="form-field" id="deadline-kind-field"><label for="deadline-kind">When does the offer expire?</label><select id="deadline-kind"><option value="hours">A set number of hours after receipt</option><option value="fixed">On a specific date</option></select></div>
+                <div class="form-field" id="fixed-deadline-field" hidden><label for="offer-fixed-deadline">Accept and pay by</label><input id="offer-fixed-deadline" type="date"></div>
+                <div class="form-field" id="hours-deadline-field"><label for="offer-expiry-hours">Hours to accept and pay</label><input id="offer-expiry-hours" type="number" min="1" max="8760" step="1" inputmode="numeric" placeholder="48"><p class="field-hint after-input">Families have this amount of time from receiving the email to accept and pay.</p></div>
+              </div></details>
               <details id="date-details" class="date-details"><summary><span>Check dates &amp; cancel sessions<small id="calendar-summary">Add your term dates first</small></span><span aria-hidden="true">＋</span></summary><div class="date-details-body"><p class="field-hint">Untick a day to cancel it for every class, or untick a whole week. Each class’s actual dates and session count are shown below.</p><div class="date-legend"><span><i></i>Included</span><span><i class="cancelled"></i>Cancelled</span></div><p id="calendar-error" class="field-error" role="status" hidden></p><div id="term-calendar" class="term-calendar"></div></div></details>
             </section>
             <section class="setup-section" aria-labelledby="classes-heading">
@@ -104,29 +114,25 @@
               <button type="button" class="add-control" id="add-class"><span aria-hidden="true">＋</span> Add another class</button>
               <p id="class-count-note" class="field-hint class-count-note" role="status"></p>
             </section>
-            <section class="setup-section" aria-labelledby="payment-heading">
-              <div class="section-label"><span>3</span><h3 id="payment-heading">Payment deadline</h3></div>
-              <div class="form-field" id="deadline-kind-field" hidden><label for="deadline-kind">When does the offer expire?</label><select id="deadline-kind"><option value="fixed">On a specific date</option><option value="hours">A set number of hours after receipt</option></select></div>
-              <div class="form-field" id="fixed-deadline-field"><label for="payment-deadline">Pay by</label><input id="payment-deadline" type="date"></div>
-              <div class="form-field" id="hours-deadline-field" hidden><label for="offer-expiry-hours">Hours to accept and pay</label><input id="offer-expiry-hours" type="number" min="1" max="8760" step="1" inputmode="numeric" placeholder="e.g. 48"><p class="field-hint after-input">Families have this amount of time from receiving the email to accept and pay.</p></div>
-            </section>
-            <details class="extra-details" id="extra-details"><summary>Other information <span>Optional</span></summary><div class="extra-details-body">
-              <p class="field-hint">Only filled-in details appear in your email. Leave anything you don’t need blank.</p>
+            <details class="extra-details" id="extra-details"><summary>Club information <span>Already included · edit if needed</span></summary><div class="extra-details-body" id="extra-details-body">
+              <p class="field-hint" id="club-info-hint">Your club’s standard information is filled in below. You can change any wording or leave a detail blank to remove it from the email.</p><div id="advanced-message-slot"></div><div id="membership-reminder-option" class="membership-reminder-option" hidden><label class="combine-label"><input id="annual-membership-reminder" type="checkbox"><span>Include the annual British Gymnastics renewal reminder<small>Your own membership wording or links stay as written; edit the fields below to remove them.</small></span></label></div>
               <div class="form-field"><label for="additional-info">Additional information</label><textarea id="additional-info" rows="3" placeholder="Anything else families should know"></textarea></div>
-              <div class="form-field"><label for="membership-note">Membership information or fee</label><textarea id="membership-note" rows="2" placeholder="Add the membership details that apply to this message"></textarea></div>
-              <div class="form-field"><label for="refund-policy">Payment / cancellation policy</label><textarea id="refund-policy" rows="2"></textarea></div>
-              <div class="form-field"><label for="what-to-bring">What to wear or bring</label><textarea id="what-to-bring" rows="2"></textarea></div>
+              <div class="form-field"><label for="payment-instructions">Payment / acceptance instructions</label><textarea id="payment-instructions" rows="3"></textarea></div><div class="form-field"><label for="membership-note">Membership information or fee</label><textarea id="membership-note" rows="2" placeholder="Add the membership details that apply to this message"></textarea></div>
+              <div class="form-field"><label for="membership-url">Membership link</label><input id="membership-url" type="url" placeholder="https://"></div><div class="form-field"><label for="membership-button-text">Membership button text</label><input id="membership-button-text" type="text" maxlength="100"></div><div class="form-field"><label for="refund-policy">Payment / cancellation policy</label><textarea id="refund-policy" rows="2"></textarea></div>
+              <div class="form-field"><label for="policy-url">Policy link</label><input id="policy-url" type="url" placeholder="https://"></div><div class="form-field"><label for="policy-button-text">Policy button text</label><input id="policy-button-text" type="text" maxlength="100"></div><div class="form-field"><label for="what-to-bring">What to wear or bring</label><textarea id="what-to-bring" rows="2"></textarea></div>
               <div class="form-field"><label for="location">Venue / address</label><textarea id="location" rows="2"></textarea></div>
               <div class="form-field"><label for="map-url">Map link</label><input id="map-url" type="url" placeholder="https://"></div>
               <div class="form-field"><label for="uniform-url">Uniform / clothing link</label><input id="uniform-url" type="url" placeholder="https://"></div>
-              <div class="form-field"><label for="parent-viewing">Parent viewing information</label><textarea id="parent-viewing" rows="2"></textarea></div>
+              <div class="form-field"><label for="uniform-button-text">Uniform / clothing button text</label><input id="uniform-button-text" type="text" maxlength="100"></div><div class="form-field"><label for="parent-viewing">Parent viewing information</label><textarea id="parent-viewing" rows="2"></textarea></div>
               <div class="form-field"><label for="information-url">More information link</label><input id="information-url" type="url" placeholder="https://"></div>
               <div class="form-field"><label for="information-button-text">Information button text</label><input id="information-button-text" type="text" placeholder="e.g. More information" maxlength="100"></div>
               <div class="form-field"><label for="payment-button-text">Payment button text</label><input id="payment-button-text" type="text" placeholder="Leave blank to use the standard wording" maxlength="100"></div>
             </div></details>
           </fieldset>
+          <div id="basic-message-slot"><div id="message-fields">
           <div class="form-field"><div class="label-line"><label for="subject">Subject line</label><span class="count" id="subject-count">0 / 240</span></div><input id="subject" name="subject" type="text" maxlength="240" placeholder="What’s your email about?" autocomplete="off" required aria-describedby="subject-error"><p class="field-error" id="subject-error" hidden></p></div>
           <div class="form-field"><label for="body" id="body-label">Your message</label><p id="body-hint" class="field-hint">Your greeting, club logo and sign-off are already included.</p><textarea id="body" name="body" rows="9" placeholder="Write your message here. Leave a blank line between paragraphs." required aria-describedby="body-hint body-error"></textarea><div class="personalise"><span>Insert a name</span><button type="button" class="token" data-token="{{child}}">Child’s name <span aria-hidden="true">＋</span></button><button type="button" class="token" data-token="{{parent}}">Parent’s name <span aria-hidden="true">＋</span></button></div><p class="field-error" id="body-error" hidden></p></div>
+          </div></div>
           <div class="button-option" id="basic-button-panel"><label class="switch-label" for="add-button"><span><strong>Add a button</strong><small>Link to a booking page, form or website.</small></span><input id="add-button" type="checkbox" role="switch" aria-controls="button-fields"><span class="switch" aria-hidden="true"></span></label><div id="button-fields" class="button-fields" hidden><div class="form-field"><label for="button-text">Button text</label><input id="button-text" type="text" maxlength="120" placeholder="e.g. Book your place" autocomplete="off" aria-describedby="button-text-error"><p class="field-error" id="button-text-error" hidden></p></div><div class="form-field"><label for="button-url">Button link</label><input id="button-url" type="url" placeholder="https://" autocomplete="off" aria-describedby="button-url-error"><p class="field-error" id="button-url-error" hidden></p></div></div></div>
           <p id="form-error" class="form-error" role="alert" hidden></p>
           <button type="submit" class="primary create-button" id="create-preview"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Create preview</span><span class="button-arrow" aria-hidden="true">→</span></button>
@@ -1015,8 +1021,8 @@ function validateCampaign(mode, input = {}) {
     return item;
   });
   const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, offerExpiryHours, classes };
-  for (const key of ['additionalInfo','membershipNote','refundPolicy','whatToBring','location','parentViewing','informationButtonText','paymentButtonText']) output[key] = String(input[key] || '').trim();
-  for (const key of ['mapUrl','uniformUrl','informationUrl']) output[key] = campaignHttps_(input[key], key.replace('Url', '') + ' button');
+  for (const key of ['additionalInfo','paymentInstructions','membershipNote','refundPolicy','whatToBring','location','parentViewing','informationButtonText','paymentButtonText','membershipButtonText','uniformButtonText','policyButtonText']) output[key] = String(input[key] || '').trim();
+  for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(input[key], key.replace('Url', '') + ' button');
   return output;
 }
 
@@ -1054,13 +1060,32 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   const button = (text, url) => '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:0 0 18px;">' + campaignComponent_(design.button, { BUTTON_TEXT: esc(text), BUTTON_URL: esc(url) }) + '</td></tr></table>';
   let html = campaignTextHtml_(intro, design) + card;
   const plain = [intro, rows.map(([label,value]) => label + ': ' + value).join('\n')];
-  for (const note of [cls.feeNote, campaign.membershipNote]) if (note) { html += campaignTextHtml_(personal(note), design); plain.push(personal(note)); }
-  const paymentText = personal(campaign.paymentButtonText) || (mode === 'renewal' ? 'Pay & renew place' : 'Accept & pay');
-  html += button(paymentText, cls.paymentUrl); plain.push(paymentText + ':\n' + cls.paymentUrl);
-  if (campaign.informationUrl) { const label = personal(campaign.informationButtonText) || (mode === 'renewal' ? 'Renewal information' : 'More information'); html += button(label, campaign.informationUrl); plain.push(label + ':\n' + campaign.informationUrl); }
-  const sections = [['additionalInfo','Further information'],['refundPolicy','Refund policy'],['whatToBring','What to bring'],['location','Location'],['parentViewing','Parent viewing']];
-  for (const [key,label] of sections) if (campaign[key]) { const value = personal(campaign[key]); html += campaignComponent_(design.heading, { HEADING: esc(label) }) + campaignTextHtml_(value, design); plain.push(label + ':\n' + value); }
-  for (const [key,label] of [['mapUrl','View map'],['uniformUrl','View uniform']]) if (campaign[key]) { html += button(label, campaign[key]); plain.push(label + ':\n' + campaign[key]); }
+  const addText = (text, heading) => {
+    if (!text) return;
+    const value = personal(text);
+    if (heading) html += campaignComponent_(design.heading, { HEADING: esc(heading) });
+    html += campaignTextHtml_(value, design);
+    plain.push((heading ? heading + ':\n' : '') + value);
+  };
+  const addButton = (url, label) => {
+    if (!url) return;
+    const text = personal(label);
+    html += button(text, url); plain.push(text + ':\n' + url);
+  };
+  addText(cls.feeNote);
+  addText(campaign.membershipNote, 'Membership');
+  addButton(campaign.membershipUrl, campaign.membershipButtonText || 'Membership information');
+  addText(campaign.paymentInstructions, mode === 'renewal' ? 'Payment' : 'How to accept');
+  addButton(cls.paymentUrl, campaign.paymentButtonText || (mode === 'renewal' ? 'Pay & renew place' : 'Accept & pay'));
+  addText(campaign.additionalInfo, 'Further information');
+  addText(campaign.refundPolicy, 'Payment & cancellation policy');
+  addButton(campaign.policyUrl, campaign.policyButtonText || 'Read club rules');
+  addText(campaign.whatToBring, 'What to wear & bring');
+  addButton(campaign.uniformUrl, campaign.uniformButtonText || 'View leotards & uniform');
+  addText(campaign.location, 'Location');
+  addButton(campaign.mapUrl, 'Google Maps');
+  addText(campaign.parentViewing, 'Parent viewing');
+  addButton(campaign.informationUrl, campaign.informationButtonText || (mode === 'renewal' ? 'Renewal information' : 'More information'));
   return { subject, html, plain: plain.join('\n\n') };
 }
 
@@ -1166,6 +1191,128 @@ function migrateRegularTimetable(clubId, mode, draft = {}) {
   });
   for (const spec of specs) if (!found.has(spec.key)) cards.push(makeRegularCard(clubId, spec));
   return { ...draft, cards, timetableVersion: TIMETABLE_VERSION };
+}
+
+// Standard wording checked against the clubs' public pages and supplied email
+// examples on 4 November 2026. User instructions take precedence: SWL/Fulham
+// include IGA, Fulham has no uniform, and Apex BG is annual, not termly.
+// These first-use suggestions remain editable; campaign dates/fees stay separate.
+const CLUB_INFO_VERSION = 1;
+const CLUB_INFO_FIELDS = ['paymentInstructions','membershipNote','membershipUrl','membershipButtonText','refundPolicy','policyUrl','policyButtonText','whatToBring','uniformUrl','uniformButtonText','location','mapUrl','parentViewing','informationUrl','informationButtonText'];
+const APEX_MEMBERSHIP_URL = 'https://mybg.british-gymnastics.org/';
+const APEX_MEMBERSHIP_LABEL = 'British Gymnastics membership';
+const APEX_OFFER_MEMBERSHIP = 'If {{child}} does not already have current British Gymnastics membership, please arrange it through My BG before attending. Membership is annual and separate from term fees.';
+const APEX_ANNUAL_REMINDER = 'If your annual British Gymnastics membership is due, please renew it through My BG.';
+const CLUB_STANDARD_INFO = {
+  swl: {
+    membershipNote: 'The price includes IGA membership.',
+    whatToBring: 'Wear suitable sportswear, with hair tied back and jewellery removed. Bring a water bottle. Socks are removed for gymnastics.',
+    location: 'Ashcroft Technology Academy, 100 West Hill, London SW15 2UT',
+    mapUrl: 'https://maps.app.goo.gl/KxNoTKZADCYya48c9',
+    uniformUrl: 'https://www.swlgymnastics.co.uk/uniform',
+    uniformButtonText: 'View leotards & uniform',
+    policyUrl: 'https://www.swlgymnastics.co.uk/club-rules',
+    informationUrl: 'https://www.swlgymnastics.co.uk',
+    renewal: {
+      paymentInstructions: 'Please complete payment by {{deadline}} to secure {{child}}’s place. If you would like to pay in cash, please reply before the deadline to arrange this.',
+      refundPolicy: 'Missed sessions for personal reasons are not refunded or replaced. If we cancel a class, we will explain the available options.',
+      parentViewing: 'Parents wait outside during regular classes. We will announce any designated watching sessions separately.'
+    },
+    offer: {
+      paymentInstructions: 'Please reply to accept {{child}}’s place and complete payment by {{deadline}}. If you would like to pay in cash, reply so we can arrange this.',
+      refundPolicy: 'We cannot offer trial sessions. If your child is unhappy or unable to continue, we will refund any remaining classes that are not attended.',
+      parentViewing: 'New parents may watch the warm up for the first session, usually the first 5 to 10 minutes, then must wait outside during classes.'
+    }
+  },
+  fulham: {
+    membershipNote: 'The price includes IGA membership.',
+    paymentInstructions: 'Please pay by {{deadline}} to secure {{child}}’s place. For cash payment, email us before the deadline, then bring the payment on the first day in an envelope labelled with your child’s name and class, and hand it to a Head Coach.',
+    refundPolicy: 'If the club cancels a class because of unforeseen circumstances, a refund will be provided.',
+    whatToBring: 'There is no uniform to buy. A comfortable T-shirt with shorts or leggings is suitable; a leotard is optional. Tie long hair back, remove jewellery and bring water.',
+    location: 'Hurlingham Academy, Peterborough Road, London SW6 3ED',
+    mapUrl: 'https://g.page/Fulham-Gymnastics?share=',
+    parentViewing: 'Please contact us before the first session if you need information about parent viewing arrangements.',
+    informationUrl: 'https://www.fulhamgymnastics.co.uk'
+    // No asserted Fulham viewing rule or current policy URL; no uniform to buy.
+  },
+  apex: {
+    paymentInstructions: 'Please pay by {{deadline}}. If you would like to pay in cash, reply before the deadline so we can arrange this and confirm the place.',
+    whatToBring: 'Wear a leotard or suitable fitted sportswear with shorts or leggings. Avoid hoods, zips, belts and loose clothing. Tie back long hair, remove jewellery and bring a named water bottle.',
+    location: 'Aspire Centre, 337 Merton Road, Earlsfield, London SW18 5JU',
+    mapUrl: 'https://maps.app.goo.gl/taQz43WMWx32epDM6',
+    uniformUrl: 'https://www.apex-gymnastics.co.uk/uniform',
+    uniformButtonText: 'View leotards & uniform',
+    parentViewing: 'Parents do not normally watch regular classes from the gym. We will announce any designated watching sessions separately.',
+    policyUrl: 'https://www.apex-gymnastics.co.uk/club-rules',
+    informationUrl: 'https://www.apex-gymnastics.co.uk',
+    renewal: { refundPolicy: 'Please give written notice if you wish to withdraw. Refunds after the first term are considered individually and are not guaranteed. Missed classes for personal reasons are not refunded.' },
+    offer: {
+      membershipNote: APEX_OFFER_MEMBERSHIP,
+      membershipUrl: APEX_MEMBERSHIP_URL,
+      membershipButtonText: APEX_MEMBERSHIP_LABEL,
+      refundPolicy: 'During the first term, you may withdraw by giving written notice. We will refund the classes in that term that have not yet been attended. Missed classes for personal reasons are not refunded.'
+    }
+  },
+  apexdance: {
+    paymentInstructions: 'Please pay by {{deadline}}. If you need a different payment arrangement, contact management@apexdanceclub.co.uk before the deadline.',
+    whatToBring: 'Wear fitted, secure dancewear that stays in place while moving: a leotard, fitted sports top with dance shorts, skort or leggings is suitable. Avoid loose or oversized tops, jeans and everyday clothing. Suitable dancewear in any colour is welcome; there is no need to replace clothing that is already appropriate. Tie hair back, remove jewellery and bring water.',
+    location: 'Aspire Centre, 337 Merton Road, London SW18 5JU',
+    mapUrl: 'https://maps.google.com/?q=337+Merton+Road+London+SW18+5JU',
+    parentViewing: 'Parents do not watch regular sessions from the studio. We will share details of designated watching sessions.',
+    policyUrl: 'https://www.apexdanceclub.co.uk/club-rules',
+    informationUrl: 'https://www.apexdanceclub.co.uk',
+    uniformUrl: 'https://www.movedancewear.com/alegra-girls-shiny-hotpant-unitard-p2750/',
+    uniformButtonText: 'Suggested dancewear (optional)',
+    renewal: { refundPolicy: 'After the first term, please give one full term’s written notice for each class. Any refund for unattended classes is discretionary. Missed classes for personal reasons are not refunded.' },
+    offer: { refundPolicy: 'During the first term, you may withdraw by emailing management@apexdanceclub.co.uk. Classes in that term that have not yet been attended will be refunded. Missed classes for personal reasons are not refunded.' }
+  }
+};
+
+function getClubInfoDefaults(clubId, mode) {
+  if (!['renewal','offer'].includes(mode)) return {};
+  const club = CLUB_STANDARD_INFO[clubId];
+  if (!club) throw new Error('Choose a recognised club for the standard information.');
+  const values = { ...club, ...(club[mode] || {}) };
+  const output = Object.fromEntries(CLUB_INFO_FIELDS.map(key => [key, values[key] || '']));
+  if (mode === 'offer') output.paymentInstructions = output.paymentInstructions.replace('{{deadline}}', 'the acceptance deadline shown above');
+  output.informationButtonText = 'More information';
+  if (output.policyUrl) output.policyButtonText = 'Read club rules';
+  return output;
+}
+function clubInfoBlank(value) { return value == null || (typeof value === 'string' && !value.trim()); }
+function clubInfoReminderDefaults() { return { membershipNote: APEX_ANNUAL_REMINDER, membershipUrl: APEX_MEMBERSHIP_URL, membershipButtonText: APEX_MEMBERSHIP_LABEL }; }
+
+function migrateClubInfo(clubId, mode, draft = {}) {
+  if (!['renewal','offer'].includes(mode)) return draft;
+  const marker = draft.clubInfo;
+  if (marker?.clubId === clubId && marker?.mode === mode && Number(marker.version) >= CLUB_INFO_VERSION) return draft;
+  const campaign = { ...(draft.campaign || {}) };
+  // Drafts are stored by club and mode. If a caller intentionally copies one,
+  // replace only known auto-filled values; retain explicitly customised wording.
+  if (marker && (marker.clubId !== clubId || marker.mode !== mode)) {
+    for (const [key,value] of Object.entries(marker.defaults || {})) if (CLUB_INFO_FIELDS.includes(key) && campaign[key] === value) campaign[key] = '';
+  }
+  const annualMembershipReminder = clubId === 'apex' && mode === 'renewal' && draft.annualMembershipReminder === true && (!marker || (marker.clubId === clubId && marker.mode === mode));
+  const defaults = { ...getClubInfoDefaults(clubId, mode), ...(annualMembershipReminder ? clubInfoReminderDefaults() : {}) };
+  for (const [key,value] of Object.entries(defaults)) if (clubInfoBlank(campaign[key])) campaign[key] = value;
+  return { ...draft, campaign, annualMembershipReminder, clubInfo: { version: CLUB_INFO_VERSION, clubId, mode, defaults } };
+}
+
+function setAnnualMembershipReminder(clubId, mode, draft = {}, enabled) {
+  if (clubId !== 'apex' || mode !== 'renewal') return draft;
+  const migrated = migrateClubInfo(clubId, mode, draft);
+  const campaign = { ...migrated.campaign };
+  const defaults = { ...migrated.clubInfo.defaults };
+  const reminder = clubInfoReminderDefaults();
+  const offer = getClubInfoDefaults('apex', 'offer');
+  for (const [key,value] of Object.entries(reminder)) {
+    // A toggle can change our suggestion, never a user's edited wording/link.
+    if (clubInfoBlank(campaign[key]) || campaign[key] === value || campaign[key] === offer[key]) {
+      campaign[key] = enabled ? value : '';
+      defaults[key] = campaign[key];
+    }
+  }
+  return { ...migrated, campaign, annualMembershipReminder: enabled === true, clubInfo: { ...migrated.clubInfo, defaults } };
 }
 
 
@@ -1393,7 +1540,9 @@ const basicFields = ['subject', 'body', 'button-text', 'button-url'];
 const campaignFields = {
   'term-name': 'termName', 'term-start': 'startDate', 'term-end': 'endDate',
   'payment-deadline': 'deadline', 'offer-expiry-hours': 'offerExpiryHours',
-  'additional-info': 'additionalInfo', 'membership-note': 'membershipNote',
+  'additional-info': 'additionalInfo', 'payment-instructions': 'paymentInstructions', 'membership-note': 'membershipNote',
+  'membership-url': 'membershipUrl', 'membership-button-text': 'membershipButtonText',
+  'policy-url': 'policyUrl', 'policy-button-text': 'policyButtonText', 'uniform-button-text': 'uniformButtonText',
   'refund-policy': 'refundPolicy', 'what-to-bring': 'whatToBring', 'location': 'location',
   'map-url': 'mapUrl', 'uniform-url': 'uniformUrl', 'parent-viewing': 'parentViewing',
   'information-url': 'informationUrl', 'information-button-text': 'informationButtonText',
@@ -1408,6 +1557,10 @@ let previewRequest = 0;
 let lastTextField = $('body');
 let classCards = [];
 let currentTimetableVersion = 0;
+let currentClubInfo = null;
+let annualMembershipReminder = false;
+let savedTermLabel = '';
+const UI_SETTINGS_VERSION = 1;
 let excludedDates = new Set();
 let drafts = {};
 let idCounter = 0;
@@ -1434,9 +1587,14 @@ for (const club of CLUBS) {
 }
 for (const radio of document.querySelectorAll('[name="email-mode"]')) radio.addEventListener('change', () => changeContext(clubId, radio.value));
 
+function readCampaignFields(trim = false) {
+  const campaign = Object.fromEntries(Object.entries(campaignFields).map(([id, key]) => [key, trim ? $(id).value.trim() : $(id).value]));
+  if (emailMode === 'offer') campaign.deadline = trim ? $('offer-fixed-deadline').value.trim() : $('offer-fixed-deadline').value;
+  return campaign;
+}
 function collectDraft() {
-  const campaign = Object.fromEntries(Object.entries(campaignFields).map(([id, key]) => [key, $(id).value]));
-  return { subject: $('subject').value, body: $('body').value, buttonText: $('button-text').value, buttonUrl: $('button-url').value, addButton: $('add-button').checked, campaign, cards: classCards, timetableVersion: currentTimetableVersion, excludedDates: [...excludedDates].sort(), deadlineKind: $('deadline-kind').value, previewClassId: $('preview-class').value };
+  const campaign = readCampaignFields();
+  return { subject: $('subject').value, body: $('body').value, buttonText: $('button-text').value, buttonUrl: $('button-url').value, addButton: $('add-button').checked, campaign, clubInfo: currentClubInfo, annualMembershipReminder, uiSettingsVersion: UI_SETTINGS_VERSION, termChoice: $('term-season').value, savedTermLabel, cards: classCards, timetableVersion: currentTimetableVersion, excludedDates: [...excludedDates].sort(), deadlineKind: $('deadline-kind').value, previewClassId: $('preview-class').value };
 }
 function saveDraft() {
   drafts[`${clubId}:${emailMode}`] = collectDraft();
@@ -1451,8 +1609,10 @@ function normalizeCards(cards) {
   }));
 }
 function restoreDraft() {
-  const draft = migrateRegularTimetable(clubId, emailMode, drafts[`${clubId}:${emailMode}`] || {});
+  const draft = migrateClubInfo(clubId, emailMode, migrateRegularTimetable(clubId, emailMode, drafts[`${clubId}:${emailMode}`] || {}));
   currentTimetableVersion = Number(draft.timetableVersion) || 0;
+  currentClubInfo = draft.clubInfo || null;
+  annualMembershipReminder = draft.annualMembershipReminder === true;
   const isAdvanced = emailMode !== 'basic';
   $('subject').value = typeof draft.subject === 'string' ? draft.subject : (isAdvanced ? (emailMode === 'renewal' ? '{{term}} renewal — {{club}}' : 'A place for {{child}} — {{club}}') : '');
   $('body').value = typeof draft.body === 'string' ? draft.body : (isAdvanced ? (emailMode === 'renewal' ? 'We’re pleased to invite {{child}} to renew their place for {{term}}. Please find the class details and payment information below.' : 'We’re delighted to offer {{child}} a place for {{term}}. Please find the class details and how to accept below.') : '');
@@ -1460,9 +1620,13 @@ function restoreDraft() {
   for (const [id, key] of Object.entries(campaignFields)) $(id).value = string(draft.campaign?.[key]);
   classCards = normalizeCards(draft.cards);
   excludedDates = new Set(Array.isArray(draft.excludedDates) ? draft.excludedDates.filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value)) : []);
-  $('deadline-kind').value = draft.deadlineKind === 'hours' ? 'hours' : 'fixed';
+  restoreTermSettings(draft); restoreDeadlineSettings(draft);
+  $('annual-membership-reminder').checked = annualMembershipReminder;
+  $('membership-reminder-option').hidden = !(clubId === 'apex' && emailMode === 'renewal');
   document.querySelector(`[name="club"][value="${clubId}"]`).checked = true;
   document.querySelector(`[name="email-mode"][value="${emailMode}"]`).checked = true;
+  $(isAdvanced ? 'advanced-message-slot' : 'basic-message-slot').append($('message-fields'));
+  $('extra-details').open = false;
   $('advanced-fields').hidden = !isAdvanced; $('advanced-fields').disabled = !isAdvanced;
   $('basic-button-panel').hidden = isAdvanced;
   for (const id of ['add-button', 'button-text', 'button-url']) $(id).disabled = isAdvanced;
@@ -1490,7 +1654,7 @@ function compileClasses() {
   });
 }
 function campaignConfig() {
-  const campaign = Object.fromEntries(Object.entries(campaignFields).map(([id, key]) => [key, $(id).value.trim()]));
+  const campaign = readCampaignFields(true);
   campaign.classes = compileClasses(); campaign.excludedDates = [...excludedDates].filter(date => (!campaign.startDate || date >= campaign.startDate) && (!campaign.endDate || date <= campaign.endDate)).sort(); campaign.excludedRanges = [];
   if (emailMode === 'offer' && $('deadline-kind').value === 'hours') campaign.deadline = '';
   else campaign.offerExpiryHours = '';
@@ -1502,13 +1666,56 @@ function getConfig(withPreview = true) {
   return config;
 }
 function fingerprint() { return JSON.stringify({ clubId, ...getConfig(false) }); }
-function updateDeadlineFields() {
-  const hours = emailMode === 'offer' && $('deadline-kind').value === 'hours';
-  $('deadline-kind-field').hidden = emailMode !== 'offer';
-  $('fixed-deadline-field').hidden = hours; $('hours-deadline-field').hidden = !hours;
-  $('payment-deadline').disabled = emailMode === 'basic' || hours;
-  $('offer-expiry-hours').disabled = emailMode === 'basic' || !hours;
+function savedTermSettings(draft) {
+  const choices = ['Spring', 'Summer', 'Autumn'];
+  if (Object.prototype.hasOwnProperty.call(draft, 'termChoice')) {
+    if (choices.includes(draft.termChoice)) return { choice: draft.termChoice, savedLabel: string(draft.savedTermLabel) };
+    if (draft.termChoice === 'saved' && string(draft.savedTermLabel).trim()) return { choice: 'saved', savedLabel: draft.savedTermLabel };
+    if (draft.termChoice === '') return { choice: '', savedLabel: string(draft.savedTermLabel) };
+  }
+  const old = string(draft.campaign?.termName).trim();
+  const match = old.match(/^(Spring|Summer|Autumn)(?:\s+term)?(?:\s+\d{4})?$/i);
+  if (match) return { choice: choices.find(value => value.toLowerCase() === match[1].toLowerCase()), savedLabel: '' };
+  return old ? { choice: 'saved', savedLabel: old } : { choice: '', savedLabel: '' };
 }
+function composeTermName(choice, startDate, savedLabel = '') {
+  if (choice === 'saved') return savedLabel;
+  if (!['Spring', 'Summer', 'Autumn'].includes(choice)) return '';
+  const year = /^\d{4}-\d{2}-\d{2}$/.test(startDate) ? startDate.slice(0, 4) : '';
+  return year ? `${choice} ${year}` : choice;
+}
+function restoreTermSettings(draft) {
+  const settings = savedTermSettings(draft); savedTermLabel = settings.savedLabel;
+  $('term-season').querySelector('[value="saved"]')?.remove();
+  if (savedTermLabel) { const option = document.createElement('option'); option.value = 'saved'; option.textContent = `Saved: ${savedTermLabel}`; $('term-season').append(option); }
+  $('term-season').value = settings.choice;
+  updateTermName();
+}
+function updateTermName() {
+  const choice = $('term-season').value; const start = $('term-start').value;
+  $('term-name').value = composeTermName(choice, start, savedTermLabel);
+  $('term-year').textContent = choice === 'saved' ? 'Saved label' : start ? start.slice(0, 4) : 'Year from dates';
+  $('term-year-hint').textContent = choice === 'saved' ? 'Your saved term label is kept. Choose Spring, Summer or Autumn to use the year from your dates.' : 'The year comes from the first date of term.';
+}
+function restoreDeadlineSettings(draft) {
+  $('offer-fixed-deadline').value = string(draft.campaign?.deadline);
+  const deadline = string(draft.campaign?.deadline); const hours = draft.campaign?.offerExpiryHours == null ? '' : String(draft.campaign.offerExpiryHours);
+  $('offer-expiry-hours').value = hours;
+  if (emailMode === 'offer' && !deadline && !hours && Number(draft.uiSettingsVersion || 0) < UI_SETTINGS_VERSION) {
+    $('deadline-kind').value = 'hours'; $('offer-expiry-hours').value = '48';
+  } else $('deadline-kind').value = draft.deadlineKind === 'hours' || (!deadline && hours) ? 'hours' : 'fixed';
+}
+function updateDeadlineFields() {
+  const offer = emailMode === 'offer'; const hours = offer && $('deadline-kind').value === 'hours';
+  $('renewal-deadline-controls').hidden = emailMode !== 'renewal';
+  $('offer-deadline-details').hidden = !offer;
+  $('fixed-deadline-field').hidden = hours; $('hours-deadline-field').hidden = !hours;
+  $('payment-deadline').disabled = emailMode !== 'renewal';
+  $('offer-fixed-deadline').disabled = !offer || hours;
+  $('offer-expiry-hours').disabled = !hours;
+  $('offer-deadline-summary').textContent = hours ? `${$('offer-expiry-hours').value || '—'} hours after receipt` : $('offer-fixed-deadline').value ? `By ${shortDate($('offer-fixed-deadline').value)}` : 'Choose a deadline';
+}
+
 function updateDraft(persist = true) {
   $('subject-count').textContent = `${$('subject').value.length} / 240`;
   $('button-fields').hidden = !$('add-button').checked;
@@ -1556,11 +1763,14 @@ function validate() {
     if (!validUrl) errors.push(['button-url', 'Add a complete link beginning with https://.']);
   }
   for (const [id, message] of errors) { $(id).setAttribute('aria-invalid', 'true'); $(`${id}-error`).textContent = message; $(`${id}-error`).hidden = false; }
-  if (errors.length) { $(errors[0][0]).focus(); return null; }
+  if (errors.length) { $(errors[0][0]).closest('details')?.setAttribute('open', ''); $(errors[0][0]).focus(); return null; }
   if (emailMode !== 'basic') {
-    for (const [id, message] of [['term-name', 'Give this term a name.'], ['term-start', 'Add the first date of term.'], ['term-end', 'Add the last date of term.']]) {
+    for (const [id, message] of [['term-season', 'Choose Spring, Summer or Autumn.'], ['term-start', 'Add the first date of term.'], ['term-end', 'Add the last date of term.']]) {
       if (!$(id).value.trim()) { reportError(message, $(id)); return null; }
     }
+    if (emailMode === 'renewal' && !$('payment-deadline').value) { reportError('Choose a renewal deadline.', $('payment-deadline')); return null; }
+    if (emailMode === 'offer' && $('deadline-kind').value === 'fixed' && !$('offer-fixed-deadline').value) { reportError('Choose the offer deadline.', $('offer-fixed-deadline')); return null; }
+    if (emailMode === 'offer' && $('deadline-kind').value === 'hours' && !$('offer-expiry-hours').value) { reportError('Enter the number of hours to accept the offer.', $('offer-expiry-hours')); return null; }
     if (!classCards.some(hasCardContent)) { reportError('Include at least one class in this email.', $('add-class')); return null; }
     for (const card of classCards.filter(hasCardContent)) {
       const node = document.querySelector(`[data-card="${card.id}"]`);
@@ -1703,10 +1913,19 @@ for (const id of basicFields) $(id).addEventListener('input', () => { $(id).remo
 for (const id of ['subject', 'body']) $(id).addEventListener('focus', () => { lastTextField = $(id); });
 for (const id of Object.keys(campaignFields)) $(id).addEventListener('input', () => {
   $(id).removeAttribute('aria-invalid');
+  if (id === 'term-start') updateTermName();
   if (id === 'term-start' || id === 'term-end') updateCalendar();
-  updateSchedules(); updateDraft();
+  updateDeadlineFields(); updateSchedules(); updateDraft();
 });
+$('term-season').addEventListener('change', () => { updateTermName(); updateDraft(); });
+$('offer-fixed-deadline').addEventListener('input', () => { updateDeadlineFields(); updateDraft(); });
 $('deadline-kind').addEventListener('change', () => { updateDeadlineFields(); updateDraft(); });
+$('annual-membership-reminder').addEventListener('change', () => {
+  const updated = setAnnualMembershipReminder(clubId, emailMode, collectDraft(), $('annual-membership-reminder').checked);
+  currentClubInfo = updated.clubInfo || currentClubInfo; annualMembershipReminder = updated.annualMembershipReminder === true;
+  for (const [id, key] of Object.entries(campaignFields)) if (!['termName','startDate','endDate','deadline','offerExpiryHours'].includes(key)) $(id).value = string(updated.campaign?.[key]);
+  $('annual-membership-reminder').checked = annualMembershipReminder; updateDraft();
+});
 $('add-button').addEventListener('change', () => { updateDraft(); if ($('add-button').checked) $('button-text').focus(); });
 for (const button of document.querySelectorAll('[data-token]')) button.addEventListener('click', () => {
   const field = lastTextField; const token = button.dataset.token; const start = field.selectionStart ?? field.value.length; const end = field.selectionEnd ?? start;
@@ -1830,7 +2049,7 @@ function openBuilder(record, remembered, focus = true) {
   $('access-notice').hidden = remembered;
   $('access-notice').textContent = remembered ? '' : 'This browser could not remember your access. You can use the builder now; you’ll need the password again when you reopen it.';
   scheduleAccessExpiry();
-  if (focus) $('subject').focus();
+  if (focus) $(emailMode === 'basic' ? 'subject' : 'term-season').focus();
 }
 function checkAccessExpiry() {
   const result = reconcileAccess(accessStorage, activeAccess, accessRemembered);
