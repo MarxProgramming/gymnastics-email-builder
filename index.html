@@ -1238,7 +1238,7 @@ function migrateRegularTimetable(clubId, mode, draft = {}) {
 // include IGA, Fulham has no uniform, and Apex BG is annual, not termly.
 // The user’s latest viewing and first-term refund wording overrides older examples.
 // Suggestions remain editable; campaign dates/fees stay separate.
-const CLUB_INFO_VERSION = 3;
+const CLUB_INFO_VERSION = 4;
 const CLUB_INFO_FIELDS = ['paymentInstructions','membershipNote','membershipUrl','membershipButtonText','refundPolicy','policyUrl','policyButtonText','whatToBring','uniformUrl','uniformButtonText','location','mapUrl','parentViewing','informationUrl','informationButtonText'];
 const APEX_MEMBERSHIP_URL = 'https://mybg.british-gymnastics.org/';
 const APEX_MEMBERSHIP_LABEL = 'British Gymnastics membership';
@@ -1246,6 +1246,7 @@ const APEX_OFFER_MEMBERSHIP = 'If {{child}} does not already have current Britis
 const APEX_ANNUAL_REMINDER = 'If your annual British Gymnastics membership is due, please renew it through My BG.';
 const STANDARD_PARENT_VIEWING = 'Parent viewing is usually during the second-to-last class of term. We will send the details nearer the date.';
 const COMMITMENT_FREE_FIRST_TERM = 'Your first term is commitment-free. If you decide not to continue for any reason during the first term, we will refund all remaining classes that have not yet been attended.';
+const FIRST_TERM_CANCELLATION = 'Unfortunately, we do not offer trial sessions. If you decide not to continue during your first term, you can cancel and we will refund all classes you have yet to attend in that first term, minus a £40 cancellation fee.';
 const CLUB_STANDARD_INFO = {
   swl: {
     membershipNote: 'The price includes IGA membership.',
@@ -1316,7 +1317,7 @@ function getClubInfoDefaults(clubId, mode) {
   output.parentViewing = STANDARD_PARENT_VIEWING;
   if (mode === 'offer') {
     output.paymentInstructions = output.paymentInstructions.replace('{{deadline}}', 'the acceptance deadline shown above');
-    output.refundPolicy = COMMITMENT_FREE_FIRST_TERM;
+    output.refundPolicy = ['swl', 'fulham'].includes(clubId) ? FIRST_TERM_CANCELLATION : COMMITMENT_FREE_FIRST_TERM;
   }
   output.informationButtonText = 'More information';
   if (output.policyUrl) output.policyButtonText = 'Read club rules';
