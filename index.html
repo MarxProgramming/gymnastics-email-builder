@@ -151,7 +151,7 @@
         <div class="export-panel panel"><div class="export-heading"><span class="export-icon" aria-hidden="true">↗</span><div><h3>Ready for Google Sheets</h3><p id="export-description">Create your preview to get the complete script.</p></div></div><div class="export-actions"><button class="primary" id="copy-script" type="button" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg><span>Copy Apps Script</span></button><button class="secondary" id="download-script" type="button" disabled aria-label="Download Apps Script"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"></path></svg><span>Download</span></button></div><p class="export-feedback" id="export-feedback" role="status"></p><div id="copy-fallback" hidden><label for="script-output">Copy the complete script below</label><textarea id="script-output" readonly spellcheck="false" rows="6"></textarea><p class="field-hint">Select all, then copy. You can also use Download.</p></div></div>
       </section>
     </div>
-    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b> in your sheet. In a new project, replace the starter code with your copied script, save, then reopen or refresh the sheet. Your club’s email menu appears automatically whenever the sheet opens. You don’t need to run anything in the script editor. Use one club script per project; take care to preserve any existing scripts.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want. For a basic email, choose your club’s email menu → <b>Send selected emails</b>. For a renewal or offer, choose <b>Choose class &amp; send selected rows</b>, then pick the class for those highlighted rows. It sends straight away to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>For renewals and offers, the class selected in this app is only a preview. Your copied script includes all included classes; choose the class in Sheets each time you send.</p><p>To review rows before sending, use <b>Check selected rows (no email)</b> for a basic email, or <b>Choose class &amp; check rows (no email)</b> for a renewal or offer. The check shows which headings were found and how many selected rows are ready. It sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
+    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>For SWL renewals and reminders, add a <b>Renewal class</b> column on the same heading row. Enter the session code for each child, such as <b>MONB1</b> or <b>SUNINT2</b>. Both <b>WEDSES1</b> and <b>SATSES1</b> renew the combined Senior Elite programme.</p><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b> in your sheet. In a new project, replace the starter code with your copied script, save, then reopen or refresh the sheet. Your club’s email menu appears automatically whenever the sheet opens. You don’t need to run anything in the script editor. Use one club script per project; take care to preserve any existing scripts.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want. For a basic email, choose your club’s email menu → <b>Send selected emails</b>. For SWL renewals and reminders, choose <b>Review renewal classes &amp; send</b>. Check each child’s matched class, times, fee and payment link, then press <b>OK</b> to send or <b>Cancel</b> to send nothing. Missing, unknown or unmatched codes stop the send. For other renewals and offers, choose <b>Choose class &amp; send selected rows</b>, then pick the class for those highlighted rows. Emails send to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>For renewals and offers, the class selected in this app is only a preview. Your copied script includes all included classes; SWL renewals use each row’s Renewal class code and ask you to confirm the matches. For other renewals and offers, choose the class in Sheets each time you send.</p><p>To review rows before sending, use <b>Check selected rows (no email)</b> for a basic email, <b>Check renewal classes (no email)</b> for SWL renewals, or <b>Choose class &amp; check rows (no email)</b> for other renewals and offers. The check shows which headings were found and how many selected rows are ready. It sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
   </main>
   <footer><span>Made for your clubs. Ready for your next message.</span><span>SWL · Fulham · Apex · Apex Dance</span></footer>
   </div>
@@ -1054,7 +1054,7 @@ function validateCampaign(mode, input = {}) {
     if (!name) throw new Error('Give each class a name.');
     const feeText = cls.fee === undefined || cls.fee === null ? '' : String(cls.fee).trim();
     if (!/^\d+(?:\.\d{1,2})?$/.test(feeText) || !Number.isFinite(Number(feeText))) throw new Error('Add the total term fee for ' + name + ', using pounds and up to two decimal places.');
-    const item = { id, name, fee: Number(feeText), paymentUrl: campaignHttps_(cls.paymentUrl, name + ' payment', true), sessions: campaignSessions_(cls.sessions), feeNote: String(cls.feeNote || '').trim() };
+    const item = { id, name, ...(cls.regularKey ? { regularKey: String(cls.regularKey) } : {}), fee: Number(feeText), paymentUrl: campaignHttps_(cls.paymentUrl, name + ' payment', true), sessions: campaignSessions_(cls.sessions), feeNote: String(cls.feeNote || '').trim() };
     const schedule = getClassSchedule({ startDate: range.start.text, endDate: range.end.text, excludedDates }, item);
     if (!schedule.sessionCount || schedule.sessions.some(session => !session.count)) throw new Error('The date range and exclusions leave a weekly session with no dates in ' + name + '.');
     return item;
@@ -1548,6 +1548,135 @@ function applyTermDefaults(clubId, mode, draft = {}, { force = false } = {}) {
   return applyRenewalPaymentLinks_(clubId, mode, result, force);
 }
 
+// Owner-supplied register codes. Duplicate groups use their published start time
+// rather than their position in the enabled classes, so removing one never shifts another.
+const SWL_RENEWAL_CODES = {
+  MONB1: [1, 'beginners'], MONJS1: [1, 'juniorsquad'], MONINT1: [1, 'intermediate'], MONJA1: [1, 'junioradvanced'], MONADV1: [1, 'advanced'],
+  TUEB1: [2, 'beginners'], TUEJS1: [2, 'juniorsquad'], TUEINT1: [2, 'intermediate'], TUEADV1: [2, 'advanced'],
+  WEDSES1: [3, 'seniorelite'],
+  THUB1: [4, 'beginners'], THUJA1: [4, 'junioradvanced'], THUINT1: [4, 'intermediate'], THUADV1: [4, 'advanced'],
+  FRIB1: [5, 'beginners'], FRIINT1: [5, 'intermediate'], FRIFV1: [5, 'floorvault'], FRIJS1: [5, 'juniorsquad'], FRIADV1: [5, 'advanced'],
+  SATB1: [6, 'beginners'], SATFV1: [6, 'floorvault', '09:30'], SATJS1: [6, 'juniorsquad'], SATINT1: [6, 'intermediate'], SATADV1: [6, 'advanced'], SATFV2: [6, 'floorvault', '12:15'], SATSES1: [6, 'seniorelite'],
+  SUNB1: [0, 'beginners'], SUNINT1: [0, 'intermediate', '09:30'], SUNINT2: [0, 'intermediate', '10:30'], SUNADV1: [0, 'advanced']
+};
+
+function swlRenewalCodeMap(classes) {
+  return Object.fromEntries(Object.entries(SWL_RENEWAL_CODES).map(([code, [day, key, time]]) => [code, classes.filter(cls => {
+    if (cls.regularKey !== 'swl:' + key) return false;
+    if (key === 'seniorelite') return cls.sessions.length === 2 && [3, 6].every(d => cls.sessions.some(s => s.weekday === d));
+    return cls.sessions.length === 1 && cls.sessions[0].weekday === day && (!time || cls.sessions[0].startTime === time);
+  }).map(cls => cls.id)]));
+}
+
+function swlRenewalColumn_(sheet, layout) {
+  const headings = sheet.getRange(layout.headerRow, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+  const matches = headings.map((value, index) => normaliseEmailHeading_(value) === 'renewal class' ? index + 1 : 0).filter(Boolean);
+  if (matches.length !== 1) throw new Error('Use exactly one Renewal class column in heading row ' + layout.headerRow + '. No emails were sent.');
+  return matches[0];
+}
+
+function swlRenewalRow_(sheet, row, layout, codeColumn) {
+  const values = sheet.getRange(row, 1, 1, Math.max(codeColumn, ...Object.values(layout.columns))).getDisplayValues()[0];
+  const person = personFromValues_(values, row, layout.columns);
+  let reason = '';
+  if (layout.columns.review && String(values[layout.columns.review - 1] || '').trim()) reason = 'marked for Review';
+  else if (sheet.isRowHiddenByUser(row) || sheet.isRowHiddenByFilter(row)) reason = 'hidden or filtered';
+  else if (!person.child) reason = 'missing child name';
+  else if (!person.parent) reason = 'missing parent name';
+  else if (!isValidEmail_(person.email)) reason = 'invalid email address';
+  const code = String(values[codeColumn - 1] || '').trim().toUpperCase();
+  if (reason) return { ...person, code, reason, classId: '' };
+  const ids = Object.prototype.hasOwnProperty.call(EMAIL_CAMPAIGN.renewalCodes, code) ? EMAIL_CAMPAIGN.renewalCodes[code] : null;
+  if (!ids) throw new Error('Row ' + row + ': ' + (code ? 'unknown Renewal class code "' + code + '"' : 'Renewal class is blank') + '. Correct it before sending.');
+  if (ids.length !== 1) throw new Error('Row ' + row + ': ' + code + (ids.length ? ' matches more than one configured class.' : ' has no matching included class.') + ' Check the builder timetable and included classes, then copy a new script.');
+  return { ...person, code, reason: '', classId: ids[0] };
+}
+
+function swlRenewalPlan_(captured) {
+  const sheet = captured.sheet, layout = resolveEmailColumns_(sheet), codeColumn = swlRenewalColumn_(sheet, layout);
+  const rows = new Set();
+  captured.ranges.forEach(range => { for (let row = Math.max(layout.headerRow + 1, range.first); row <= Math.min(sheet.getLastRow(), range.last); row++) rows.add(row); });
+  if (!rows.size) throw new Error('Highlight at least one data row below the headings.');
+  const entries = [], errors = [];
+  for (const row of [...rows].sort((a, b) => a - b)) {
+    try {
+      const entry = swlRenewalRow_(sheet, row, layout, codeColumn);
+      if (!entry.reason) {
+        selectedCampaignClass_ = EMAIL_CAMPAIGN.campaign.classes.find(cls => cls.id === entry.classId);
+        buildSwlEmail_(entry.parent, entry.child); // Validate all messages before approval or writes.
+      }
+      entries.push(entry);
+    } catch (error) { errors.push(error.message); }
+    finally { selectedCampaignClass_ = null; }
+  }
+  if (errors.length) throw new Error(errors.join('\n') + '\n\nNo emails were sent.');
+  return { headerRow: layout.headerRow, codeColumn, columns: layout.columns, entries };
+}
+
+function swlRenewalReview_(plan) {
+  const eligible = plan.entries.filter(entry => !entry.reason);
+  const lines = [eligible.length + ' eligible selected rows; ' + (plan.entries.length - eligible.length) + ' skipped.',
+    EMAIL_CAMPAIGN.campaign.termName + ' | ' + EMAIL_CAMPAIGN.campaign.startDate + ' to ' + EMAIL_CAMPAIGN.campaign.endDate,
+    'Renewal deadline: ' + EMAIL_CAMPAIGN.campaign.deadline, ''];
+  for (const entry of plan.entries) {
+    if (entry.reason) { lines.push('Row ' + entry.row + ': SKIP — ' + entry.reason); continue; }
+    const cls = EMAIL_CAMPAIGN.campaign.classes.find(item => item.id === entry.classId);
+    lines.push('Row ' + entry.row + ' — ' + entry.child + ' — ' + entry.email,
+      entry.code + ' → ' + getCampaignClassLabel(cls), campaignMoney_(cls.fee) + campaignFeeCoverage_(cls), 'Payment: ' + cls.paymentUrl, '');
+  }
+  lines.push('Previously sent rows will be emailed again.');
+  return lines.join('\n');
+}
+
+function runSwlRenewal_(dryRun) {
+  const ui = SpreadsheetApp.getUi(), ss = SpreadsheetApp.getActiveSpreadsheet();
+  try {
+    const selection = ss.getSelection().getActiveRangeList();
+    if (!selection) throw new Error('Highlight the rows you want to email first.');
+    const captured = { sheet: ss.getActiveSheet(), ranges: selection.getRanges().map(range => ({ first: range.getRow(), last: range.getLastRow() })) };
+    captured.renewalPlan = swlRenewalPlan_(captured);
+    const review = swlRenewalReview_(captured.renewalPlan);
+    if (dryRun || !captured.renewalPlan.entries.some(entry => !entry.reason)) { ui.alert('SWL renewal check', review + '\n\nNo emails sent; no cells changed.', ui.ButtonSet.OK); return; }
+    // Google dialogs suspend execution. Acquire the document lock only after OK.
+    if (ui.alert('Confirm SWL ' + (EMAIL_CAMPAIGN.renewalVariant === 'reminder' ? 'renewal reminders' : 'renewals'), review + '\n\nAre these matches correct? Press OK to send these emails, or Cancel to send nothing.', ui.ButtonSet.OK_CANCEL) !== ui.Button.OK) return;
+    processSwlEmails_(false, captured);
+  } catch (error) { ui.alert(error.message); }
+  finally { selectedCampaignClass_ = null; }
+}
+
+function assertSwlRenewalPlan_(captured) {
+  if (!captured || !captured.renewalPlan) throw new Error('Use SWL emails → Review renewal classes & send.');
+  if (JSON.stringify(swlRenewalPlan_(captured)) !== JSON.stringify(captured.renewalPlan)) throw new Error('The selected rows, names, emails or renewal classes changed after confirmation. No emails were sent. Reopen the review.');
+}
+
+function selectSwlRenewalRow_(sheet, row, layout, captured) {
+  const expected = captured.renewalPlan.entries.find(entry => entry.row === row);
+  const actual = swlRenewalRow_(sheet, row, layout, captured.renewalPlan.codeColumn);
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error('Row ' + row + ' changed after confirmation. Sending stopped; check Email Status before selecting the remaining rows again.');
+  selectedCampaignClass_ = EMAIL_CAMPAIGN.campaign.classes.find(cls => cls.id === expected.classId);
+}
+
+const SWL_RENEWAL_RUNTIME_SOURCE = [swlRenewalColumn_, swlRenewalRow_, swlRenewalPlan_, swlRenewalReview_, runSwlRenewal_, assertSwlRenewalPlan_, selectSwlRenewalRow_].map(fn => fn.toString()).join('\n\n');
+
+function integrateSwlRenewal(source) {
+  const replacements = [
+    ['function sendSelectedSwlEmails() { runClassCampaign_(false); }', 'function sendSelectedSwlEmails() { runSwlRenewal_(false); }'],
+    ['function checkSelectedSwlRows() { runClassCampaign_(true); }', 'function checkSelectedSwlRows() { runSwlRenewal_(true); }'],
+    ['    layout = resolveEmailColumns_(sheet);', '    layout = resolveEmailColumns_(sheet);\n    assertSwlRenewalPlan_(capturedSelection);'],
+    ["    if (!dryRun) buildSwlEmail_('Parent', 'Child');", '    // All per-row messages were validated before confirmation.'],
+    ['      const email = buildSwlEmail_(person.parent, person.child);', '      selectSwlRenewalRow_(sheet, row, layout, capturedSelection);\n      const email = buildSwlEmail_(person.parent, person.child);'],
+    ["'Choose class & send selected rows'", "'Review renewal classes & send'"],
+    ["'Choose class & check rows (no email)'", "'Check renewal classes (no email)'"],
+    [' * Choose the class in the sheet dialog; then each selected row sends in turn.', ' * Read each row’s Renewal class code, review the matches, then press OK to send.'],
+    ['emails > Choose class & send selected rows', 'emails > Review renewal classes & send']
+  ];
+  for (const [from, to] of replacements) {
+    if (!source.includes(from)) throw new Error('The SWL renewal workflow could not be prepared. Refresh the builder.');
+    source = source.replace(from, to);
+  }
+  return source + '\n' + SWL_RENEWAL_RUNTIME_SOURCE + '\n';
+}
+
 
 const CLUBS = Object.freeze([
   Object.freeze({ id: 'swl', name: 'SWL Gymnastics', accent: '#765091', logo: "data:image/jpeg;base64,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", logoMime: 'image/jpeg' }),
@@ -1725,7 +1854,7 @@ async function generateCampaignScript(clubId, options) {
   const functionStart = source.indexOf(`function ${clubId}EmailContent_(parent, child)`);
   const functionEnd = source.indexOf('\n// ==========================================\n// MENU AND SELECTED-ROW SENDER', functionStart);
   if (functionEnd < 0) throw new Error('The campaign template is incomplete.');
-  const settings = { mode: options.mode, ...(renewalVariant ? { renewalVariant } : {}), campaign, content: { subject: content.subject, body: content.body }, brand: { name: club.name, accent: club.accent, design: getClubEmailDesign(clubId) } };
+  const settings = { ...(clubId === 'swl' && options.mode === 'renewal' ? { renewalCodes: swlRenewalCodeMap(campaign.classes) } : {}), mode: options.mode, ...(renewalVariant ? { renewalVariant } : {}), campaign, content: { subject: content.subject, body: content.body }, brand: { name: club.name, accent: club.accent, design: getClubEmailDesign(clubId) } };
   const messageKind = options.mode === 'offer' ? 'PLACE OFFER' : renewalVariant === 'reminder' ? 'RENEWAL REMINDER' : 'MAIN RENEWAL';
   const campaignFunctions = `// ${messageKind}
 // Term settings and class choices. The fee is the configured total, never auto-prorated.
@@ -1788,7 +1917,8 @@ function runClassCampaign_(dryRun) {
   const capturedSource = `  const sheet = capturedSelection ? capturedSelection.sheet : ss.getActiveSheet();
   const selection = capturedSelection ? { getRanges: () => capturedSelection.ranges.map(range => ({ getRow: () => range.first, getLastRow: () => range.last })) } : ss.getSelection().getActiveRangeList();`;
   source = source.slice(0, selectionStart) + capturedSource + source.slice(selectionStart + oldSelection.length);
-  return putSpreadsheetMenuFirst(source, true);
+  const result = putSpreadsheetMenuFirst(source, true);
+  return clubId === 'swl' && options.mode === 'renewal' ? integrateSwlRenewal(result) : result;
 }
 
 
@@ -1950,7 +2080,7 @@ function hasCardContent(card) {
 }
 function compileClasses() {
   return sortCampaignClasses(classCards.filter(hasCardContent).flatMap(card => {
-    const base = { fee: card.fee.trim(), paymentUrl: card.paymentUrl.trim(), feeNote: card.feeNote.trim() };
+    const base = { ...(card.regularKey ? { regularKey: card.regularKey } : {}), fee: card.fee.trim(), paymentUrl: card.paymentUrl.trim(), feeNote: card.feeNote.trim() };
     const sessions = card.sessions.map(session => ({ weekday: session.weekday === '' ? null : Number(session.weekday), startTime: session.startTime, endTime: session.endTime }));
     if (card.combined) return [{ ...base, id: card.id, name: card.name.trim(), sessions }];
     return sessions.map((session, index) => ({ ...base, id: `${card.id}-${card.sessions[index].id}`, name: card.name.trim() ? `${card.name.trim()}${dayName(session.weekday) ? ` — ${dayName(session.weekday)} ${session.startTime}${session.endTime ? `–${session.endTime}` : ''}` : ''}`.trim() : '', sessions: [session] }));
@@ -2211,7 +2341,7 @@ function updateSchedules(preferredId = $('preview-class').value) {
   if (options.some(item => item.id === preferredId)) select.value = preferredId;
   const choice = options.find(item => item.id === select.value);
   $('preview-class-summary').textContent = choice ? scheduleSummary(scheduleFor(choice, campaign)) : '';
-  $('class-count-note').textContent = `${options.length} ${options.length === 1 ? 'class option' : 'class options'} will be included in your script. You’ll choose one in Google Sheets.`;
+  $('class-count-note').textContent = `${options.length} ${options.length === 1 ? 'class option' : 'class options'} will be included in your script. ${typeof clubId !== 'undefined' && clubId === 'swl' && emailMode === 'renewal' ? 'Each selected row’s Renewal class code chooses its class. Review the matches and press OK in Sheets.' : 'You’ll choose one in Google Sheets.'}`;
 }
 
 $('class-list').addEventListener('input', (event) => {
@@ -2321,7 +2451,7 @@ for (const view of ['desktop', 'mobile']) $(`${view}-view`).addEventListener('cl
   for (const id of ['desktop', 'mobile']) { $(`${id}-view`).classList.toggle('selected', view === id); $(`${id}-view`).setAttribute('aria-pressed', String(view === id)); }
 });
 function scriptIsCurrent() { return Boolean(currentScript) && fingerprint() === previewFingerprint; }
-function copiedMessage() { return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows and choose Send selected emails.' : 'All included classes copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows, use “Choose class & send selected rows”, then pick their class.'; }
+function copiedMessage() { if (clubId === 'swl' && emailMode === 'renewal') return 'Copied. Replace your previous renewal script, save, then reopen the sheet. Highlight rows with Renewal class codes, choose “Review renewal classes & send”, check the matches and press OK.'; return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows and choose Send selected emails.' : 'All included classes copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows, use “Choose class & send selected rows”, then pick their class.'; }
 $('copy-script').addEventListener('click', async () => {
   if (!scriptIsCurrent()) return;
   try {
