@@ -92,7 +92,7 @@ Common variations are accepted, including `Child Name`, `Child’s First Name`, 
 
 `Email Status` is added automatically at the first column after all existing data when the first eligible email is sent. Existing attendance, notes and contact columns are preserved. A `Review` column is optional; if present, its existing skip behaviour is retained. Checking rows never adds columns or changes cells.
 
-Open **Extensions → Apps Script** from the spreadsheet, replace the starter code with the complete generated script, save, then reopen or reload the spreadsheet. Every generated script starts with `onOpen()`, which adds the club email menu automatically. No setup function, manual trigger or class selection is needed to open the sheet. Opening only adds the menu; it never sends emails. Preserve existing scripts if you add this to an established project: replace the previous builder script rather than appending another full script, because their shared function names would collide. If the project already has an unrelated `onOpen`, merge its menu code into the one opening function.
+Open **Extensions → Apps Script** from the spreadsheet, replace the starter code with the complete generated script, save, then reopen or reload the spreadsheet. Basic and offer scripts start with `onOpen()`, which adds the club email menu automatically. No setup function, manual trigger or class selection is needed to open the sheet. Opening only adds the menu; it never sends emails. Preserve existing scripts if you add this to an established project: replace the previous builder script rather than appending another full script, because their shared function names would collide. If the project already has an unrelated `onOpen`, merge its menu code into the one opening function.
 
 Highlight your intended rows, then use the club email menu:
 
@@ -134,3 +134,24 @@ Offline tests use mocked Google services and must not be described as real deliv
 - Sunday: SUNB1, SUNINT1 (09:30), SUNINT2 (10:30), SUNADV1
 
 SATFV1 maps to 09:30 and SATFV2 to 12:15. Reordering or excluding classes never renumbers these codes. Standard class identity is retained if a class is renamed. A missing/ambiguous standard timetable mapping produces a clear error; custom classes are not guessed. To use this workflow, generate and replace the previous renewal script, preserving the basic composer and merging its menu call into the single onOpen if installed together. Existing scripts already pasted into Sheets do not update automatically.
+
+
+## Renewal companion installation (v2.6)
+
+The browser now exports renewals and renewal reminders through `generateCompanionScript`. Each is a separate companion file with a private closure for all campaign settings, logos and helpers. Only three club/message-specific functions are shared: Menu, Send and Check. It declares no `onOpen`, and main renewals and reminders have different menus and names. Basic and offer exports retain their existing format.
+
+Keep the basic composer. Add a renewal file once, then replace that file’s contents when changing term or wording. Do not append a second copy of the same club/message companion. Main and reminder may each have a file.
+
+The existing project opening function needs one optional menu call per companion, once. For SWL:
+
+```javascript
+function onOpen() {
+  swlBasicAddMenu();
+  if (typeof gebSwlRenewalMainMenu === 'function') gebSwlRenewalMainMenu();
+  if (typeof gebSwlRenewalReminderMenu === 'function') gebSwlRenewalReminderMenu();
+}
+```
+
+Preserve unrelated menu calls when connecting other projects. The exact call appears at the top of each generated companion. In a prepared sheet, saving and reopening is sufficient. In an unprepared sheet, running the companion’s first Menu function shows it immediately for the current session; connect that function to the existing `onOpen` for future opens. No trigger, extra authorization scope or automatic send is added. Opening only adds menus.
+
+`generateScript` remains the standalone core used by rendering/sender tests; the app’s copy and download path uses `generateCompanionScript`. Automated tests cover eight coexisting companions, existing legacy campaign globals and a basic composer opening function, all 30 SWL code-selected sends, reminder isolation, cancellation, dry runs and offline/public bundle parity. These are mock-service tests, not live email deliveries.

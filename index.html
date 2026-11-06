@@ -151,7 +151,7 @@
         <div class="export-panel panel"><div class="export-heading"><span class="export-icon" aria-hidden="true">↗</span><div><h3>Ready for Google Sheets</h3><p id="export-description">Create your preview to get the complete script.</p></div></div><div class="export-actions"><button class="primary" id="copy-script" type="button" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg><span>Copy Apps Script</span></button><button class="secondary" id="download-script" type="button" disabled aria-label="Download Apps Script"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"></path></svg><span>Download</span></button></div><p class="export-feedback" id="export-feedback" role="status"></p><div id="copy-fallback" hidden><label for="script-output">Copy the complete script below</label><textarea id="script-output" readonly spellcheck="false" rows="6"></textarea><p class="field-hint">Select all, then copy. You can also use Download.</p></div></div>
       </section>
     </div>
-    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>For SWL renewals and reminders, add a <b>Renewal class</b> column on the same heading row. Enter the session code for each child, such as <b>MONB1</b> or <b>SUNINT2</b>. Both <b>WEDSES1</b> and <b>SATSES1</b> renew the combined Senior Elite programme.</p><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b> in your sheet. In a new project, replace the starter code with your copied script, save, then reopen or refresh the sheet. Your club’s email menu appears automatically whenever the sheet opens. You don’t need to run anything in the script editor. Use one club script per project; take care to preserve any existing scripts.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want. For a basic email, choose your club’s email menu → <b>Send selected emails</b>. For SWL renewals and reminders, choose <b>Review renewal classes &amp; send</b>. Check each child’s matched class, times, fee and payment link, then press <b>OK</b> to send or <b>Cancel</b> to send nothing. Missing, unknown or unmatched codes stop the send. For other renewals and offers, choose <b>Choose class &amp; send selected rows</b>, then pick the class for those highlighted rows. Emails send to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>For renewals and offers, the class selected in this app is only a preview. Your copied script includes all included classes; SWL renewals use each row’s Renewal class code and ask you to confirm the matches. For other renewals and offers, choose the class in Sheets each time you send.</p><p>To review rows before sending, use <b>Check selected rows (no email)</b> for a basic email, <b>Check renewal classes (no email)</b> for SWL renewals, or <b>Choose class &amp; check rows (no email)</b> for other renewals and offers. The check shows which headings were found and how many selected rows are ready. It sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
+    <details class="instructions" id="how-to-use"><summary><span><span class="instruction-mark" aria-hidden="true">?</span>Use your script in Google Sheets</span><span class="summary-plus" aria-hidden="true">＋</span></summary><div class="instructions-body"><ol><li><strong>Check your headings.</strong><p>Your sheet needs columns for the child’s name, parent’s name and email address, in any order. The script finds the heading row within the first 20 rows and recognises common variations such as <b>Child Name</b>, <b>Guardian Name</b> and <b>Email Address</b>. Other columns can stay.</p><div class="heading-chips"><code>Childs Name</code><code>Parents Name</code><code>Email</code></div><p>For SWL renewals and reminders, add a <b>Renewal class</b> column on the same heading row. Enter the session code for each child, such as <b>MONB1</b> or <b>SUNINT2</b>. Both <b>WEDSES1</b> and <b>SATSES1</b> renew the combined Senior Elite programme.</p><p>An <b>Email Status</b> column is added at the right when you send, if it’s missing. A <b>Review</b> column is optional.</p></li><li><strong>Paste your script.</strong><p>Open <b>Extensions → Apps Script</b>. For a renewal or reminder, add a separate Script file and paste the copied companion there. <b>Keep your basic email composer.</b> Renewals and reminders have their own menus and private settings, so they can run alongside it.</p><p>A prepared spreadsheet only needs you to save and reopen it. For another spreadsheet, connect the menu once using the line at the top of the copied script. You can also run its first function to show the menu immediately without sending. Next term, replace the contents of that same renewal file; don’t add a second copy of the same message type.</p><p>Basic emails and offers still use their own opening menu. Preserve existing scripts when installing those.</p></li><li><strong>Select your rows and send.</strong><p>Highlight the recipient rows you want. For a basic email, choose your club’s email menu → <b>Send selected emails</b>. For SWL renewals and reminders, choose <b>Review renewal classes &amp; send</b>. Check each child’s matched class, times, fee and payment link, then press <b>OK</b> to send or <b>Cancel</b> to send nothing. Missing, unknown or unmatched codes stop the send. For other renewals and offers, choose <b>Choose class &amp; send selected rows</b>, then pick the class for those highlighted rows. Emails send to each eligible selected row, one at a time, and refreshes the result in <b>Email Status</b>. Existing status text never blocks a send. Google may ask you to authorise the script the first time.</p></li></ol><div class="sending-note"><strong>A few helpful details</strong><p>For renewals and offers, the class selected in this app is only a preview. Your copied script includes all included classes; SWL renewals use each row’s Renewal class code and ask you to confirm the matches. For other renewals and offers, choose the class in Sheets each time you send.</p><p>To review rows before sending, use <b>Check selected rows (no email)</b> for a basic email, <b>Check renewal classes (no email)</b> for SWL renewals, or <b>Choose class &amp; check rows (no email)</b> for other renewals and offers. The check shows which headings were found and how many selected rows are ready. It sends nothing and leaves your sheet unchanged.</p><p><b>Selecting a previously sent row sends it another email.</b> You can reuse your sheet and leave old Email Status values in place for a new message.</p><p>Rows with anything in <b>Review</b> are skipped when that column is present. Hidden and filtered rows, missing names and invalid email addresses are also skipped. Google filter views are not detected. Siblings sharing an address each get their own email.</p><p>If a send is interrupted or an error appears, check Sent mail before selecting that row again. If Google’s allowance or the time limit is reached, select only the remaining unsent rows to continue.</p><p>Emails come from the Google account running the script. Use the appropriate club account.</p></div></div></details>
   </main>
   <footer><span>Made for your clubs. Ready for your next message.</span><span>SWL · Fulham · Apex · Apex Dance</span></footer>
   </div>
@@ -1921,6 +1921,47 @@ function runClassCampaign_(dryRun) {
   return clubId === 'swl' && options.mode === 'renewal' ? integrateSwlRenewal(result) : result;
 }
 
+// Renewal companions keep all campaign data and helpers private. Only the three
+// deliberately named menu callbacks are shared with the bound project.
+function wrapRenewalCompanion(source, clubId, variant = 'main') {
+  const prefix = { swl: 'Swl', fulham: 'Fulham', apex: 'Apex', apexdance: 'ApexDance' }[clubId];
+  if (!prefix || !['main', 'reminder'].includes(variant)) throw new Error('Choose a valid renewal club and message.');
+  const stem = 'geb' + prefix + 'Renewal' + (variant === 'reminder' ? 'Reminder' : 'Main');
+  const moduleName = 'GEB_' + clubId.toUpperCase() + '_RENEWAL_' + variant.toUpperCase();
+  const oldMenu = {swl:'SWL emails',fulham:'Fulham emails',apex:'Apex emails',apexdance:'Apex Dance emails'}[clubId];
+  const menuName = oldMenu.replace(' emails', variant === 'reminder' ? ' renewal reminders' : ' renewals');
+  const opening = source.match(/^function onOpen\(\) \{[\s\S]*?^\}\n\n/m);
+  if (!opening || (source.match(/^function onOpen\(/gm)||[]).length !== 1) throw new Error('The renewal menu could not be isolated.');
+  const menu = opening[0].replace('function onOpen()', 'function addMenu_()')
+    .replace("createMenu('" + oldMenu + "')", "createMenu('" + menuName + "')")
+    .replace("'sendSelected" + prefix + "Emails'", "'" + stem + "Send'")
+    .replace("'checkSelected" + prefix + "Rows'", "'" + stem + "Check'");
+  const body = source.replace(opening[0], menu).replaceAll(oldMenu + ' >', menuName + ' >').replaceAll(oldMenu + ' →', menuName + ' →');
+  return `/** ${menuName} — companion script. @OnlyCurrentDoc
+ * Add this in its own file beside your basic composer. Keep one file per message type.
+ * Replace this companion's contents next term; do not append another copy.
+ * No onOpen function and no shared campaign/helper names are declared here.
+ * One-time menu connection: add this line INSIDE the project's existing onOpen:
+ * if (typeof ${stem}Menu === 'function') ${stem}Menu();
+ * Once connected: save and reopen the sheet. No setup or sending occurs on open.
+ * To show this menu immediately, run ${stem}Menu (it sends nothing).
+ */
+function ${stem}Menu() { ${moduleName}.addMenu(); }
+function ${stem}Send() { ${moduleName}.send(); }
+function ${stem}Check() { ${moduleName}.check(); }
+const ${moduleName} = (function () {
+'use strict';
+${body}
+return { addMenu: addMenu_, send: sendSelected${prefix}Emails, check: checkSelected${prefix}Rows };
+})();
+`;
+}
+
+async function generateCompanionScript(clubId, options) {
+  const source = await generateScript(clubId, options);
+  return options?.mode === 'renewal' ? wrapRenewalCompanion(source, clubId, options.renewalVariant || 'main') : source;
+}
+
 
 const $ = (id) => document.getElementById(id);
 const form = $('email-form');
@@ -2426,7 +2467,7 @@ async function createPreview(scroll = true) {
   const button = $('create-preview'); button.disabled = true; button.setAttribute('aria-busy', 'true'); button.querySelector('span').textContent = 'Creating preview…';
   try {
     await loadTemplate(requestedClub);
-    const [script, html] = await Promise.all([generateScript(requestedClub, config), renderPreview(requestedClub, config, { child: 'Joseph', parent: 'Joseph' })]);
+    const [script, html] = await Promise.all([generateCompanionScript(requestedClub, config), renderPreview(requestedClub, config, { child: 'Joseph', parent: 'Joseph' })]);
     if (request !== previewRequest) return;
     if (fingerprint() !== requestedFingerprint || (emailMode !== 'basic' && $('preview-class').value !== requestedPreviewClass)) throw new Error('Your message or class changed while the preview was loading. Please create it again.');
     currentScript = script; previewFingerprint = requestedFingerprint;
@@ -2451,7 +2492,7 @@ for (const view of ['desktop', 'mobile']) $(`${view}-view`).addEventListener('cl
   for (const id of ['desktop', 'mobile']) { $(`${id}-view`).classList.toggle('selected', view === id); $(`${id}-view`).setAttribute('aria-pressed', String(view === id)); }
 });
 function scriptIsCurrent() { return Boolean(currentScript) && fingerprint() === previewFingerprint; }
-function copiedMessage() { if (clubId === 'swl' && emailMode === 'renewal') return 'Copied. Replace your previous renewal script, save, then reopen the sheet. Highlight rows with Renewal class codes, choose “Review renewal classes & send”, check the matches and press OK.'; return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows and choose Send selected emails.' : 'All included classes copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows, use “Choose class & send selected rows”, then pick their class.'; }
+function copiedMessage() { if (emailMode === 'renewal') return 'Copied as a separate renewal companion. Keep your basic composer. Paste into your renewal file, save and reopen the sheet. A prepared sheet shows its renewal menu automatically; for a new sheet, follow the one-time menu connection at the top of the script.'; return emailMode === 'basic' ? 'Copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows and choose Send selected emails.' : 'All included classes copied. Paste into Extensions → Apps Script, save, then reopen the sheet. Your club menu appears automatically. Highlight rows, use “Choose class & send selected rows”, then pick their class.'; }
 $('copy-script').addEventListener('click', async () => {
   if (!scriptIsCurrent()) return;
   try {
