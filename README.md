@@ -1,6 +1,34 @@
-# Club email builder
+# Club Code Manager
 
 [Open the public app](https://marxprogramming.github.io/gymnastics-email-builder/).
+
+## Website code and shared settings (v3.0)
+
+The existing email builder now shares one app with a Website Code Generator and Club Settings & Backups. The original basic, renewal, reminder and offer workflows are retained, including the separate renewal companion menus and SWL register class-code matching.
+
+### Website updates
+
+1. Open **Website code**, choose a club and a captured component.
+2. Edit its simple content fields, or choose **Use this club’s saved settings** for supported shared values. Search fields when editing a larger page.
+3. Create the preview. Check desktop and phone widths; interactive previews support the original local controls but isolate forms and external services.
+4. Copy or download the **complete replacement code**. Paste it into that component’s existing Squarespace code block when you decide to publish.
+
+The app never publishes to Squarespace. Original snippets are immutable: unchanged defaults generate the exact captured original. Each component also has an original-code download and a reset action. Save a named version to reuse a particular configuration.
+
+The initial catalog comes from 28 custom blocks on 24 published main-navigation pages across all four websites, captured 7 November 2026. SWL Joining is native Squarespace content and has no custom replacement block. Disabled/unpublished and Not Linked pages are excluded. Exact extraction was checked against a complete code-editor copy from each club; Squarespace-added attributes on full-document `<html>` tags were removed. Designs, scripts, CSS identifiers and existing links remain specific to their original components.
+
+### Shared term information
+
+**Club settings & backups** stores each club’s term, cancelled dates, renewal deadline, class tuition, session times and club information. Saving settings does not overwrite existing email or website drafts. Apply them explicitly to the template you want to update. Shared class prices are renewal tuition; website membership-inclusive prices must include the separate membership charge. Registration links remain registration links and are not substituted with renewal payment links.
+
+Use **Bring in this club’s current renewal settings** to copy an existing renewal setup into the central form. Use **Use saved settings in email renewal** to apply the saved term to a renewal draft. Classes/prices/payment links and club information are separate optional choices; the message wording remains unchanged.
+
+### Backups and storage
+
+Named website versions, central settings and email drafts are saved in the current browser. **Download configuration backup** exports them to a JSON file for another browser or recovery. The import screen shows a summary before restoring. Email drafts are restored only when explicitly selected; password/access records are never exported. A failed storage write rolls back the previous values and reports any recovery failure.
+
+The website generator escapes content for its exact HTML or JavaScript context, rejects ambiguous source targets and unsafe links, and never evaluates imported configuration. Previews use a sandboxed iframe without parent access, external scripts, form submission or network data requests. Remote images and fonts may load for visual accuracy. The original local password screen remains a convenience gate on a public static app, not server authentication.
+
 
 A browser app for creating basic emails, term renewals, gentle renewal reminders and place offers for SWL Gymnastics, Fulham Gymnastics, Apex Gymnastics and Apex Dance Club. Configure the message, preview a personalised email, then copy one complete standalone Google Apps Script. SWL and Fulham retain their saved designs. Apex Gymnastics has a teal gradient header and white logo; Apex Dance uses its purple and gold website branding.
 
@@ -119,7 +147,7 @@ Open `http://localhost:4173` after starting the preview server. Publish the cont
 
 The engine replaces the email-content function and uses the send-only MailApp service. Advanced modes add calendar-derived class details, styled sections and payment links within the club design. The Apps Script class prompt runs before the document lock; selected rows and their sheet are captured before the prompt opens. All four app-owned templates share a sender that detects headings and adds tracking safely. SWL and Fulham email designs remain unchanged; the Apex Gymnastics and Apex Dance variants retain their requested branding. Original templates on the desktop are never edited. Generated script inputs are encoded as data, and personalisation is escaped in the rendered email.
 
-Run `node scripts/build-senders.mjs` after changing `scripts/selected-row-sender.gs` to apply the shared sender to all four app templates. Run `node scripts/build-templates.mjs` after changing an email design to regenerate the exact preview functions. Run `node scripts/build-standalone.mjs` to create a single offline file at `build/index.html`, or pass an explicit destination path. This file embeds the app, gate, templates and images without external dependencies. The optional `build-variants.mjs` helper recreates the two app-owned variants from an original Apex template folder and the supplied brand PNGs, then applies the current shared sender.
+Run `node scripts/build-senders.mjs` after changing `scripts/selected-row-sender.gs` to apply the shared sender to all four app templates. Run `node scripts/build-templates.mjs` after changing an email design to regenerate the exact preview functions. Run `node scripts/build-standalone.mjs` to create a single offline file at `build/index.html`, or pass an explicit destination path. This file embeds the app, gate, email templates and email images for offline use. Website previews may still need an internet connection for external images and fonts. The optional `build-variants.mjs` helper recreates the two app-owned variants from an original Apex template folder and the supplied brand PNGs, then applies the current shared sender.
 
 Offline tests use mocked Google services and must not be described as real delivery tests. A live delivery test requires an explicitly authorised recipient and a signed-in Google account.
 
@@ -155,3 +183,5 @@ function onOpen() {
 Preserve unrelated menu calls when connecting other projects. The exact call appears at the top of each generated companion. In a prepared sheet, saving and reopening is sufficient. In an unprepared sheet, running the companion’s first Menu function shows it immediately for the current session; connect that function to the existing `onOpen` for future opens. No trigger, extra authorization scope or automatic send is added. Opening only adds menus.
 
 `generateScript` remains the standalone core used by rendering/sender tests; the app’s copy and download path uses `generateCompanionScript`. Automated tests cover eight coexisting companions, existing legacy campaign globals and a basic composer opening function, all 30 SWL code-selected sends, reminder isolation, cancellation, dry runs and offline/public bundle parity. These are mock-service tests, not live email deliveries.
+
+Captured source and the catalog rebuild helpers are included in `scripts/website-sources/`. To rebuild from the archived originals, run `node scripts/website-sources/build-catalog.mjs`, then rerun the tests and standalone build.
