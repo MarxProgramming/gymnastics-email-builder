@@ -115,6 +115,7 @@
               <div id="renewal-deadline-controls" class="deadline-controls" hidden>
                 <label for="payment-deadline">Renew and pay by</label><input id="payment-deadline" type="date"><p class="field-hint after-input">Choose the deadline for this term.</p>
               </div>
+              <div id="renewal-viewing-controls" class="form-field" hidden><label for="parent-viewing-week">Parents’ viewing — week of</label><input id="parent-viewing-week" type="date"><p class="field-hint after-input">Choose the week’s starting date. Leave blank to leave parents’ viewing out of this email.</p></div>
               <details id="offer-deadline-details" class="offer-deadline-details" hidden><summary>Offer acceptance window <span id="offer-deadline-summary">48 hours after receipt</span></summary><div class="offer-deadline-body">
                 <div class="form-field" id="deadline-kind-field"><label for="deadline-kind">When does the offer expire?</label><select id="deadline-kind"><option value="hours">A set number of hours after receipt</option><option value="fixed">On a specific date</option></select></div>
                 <div class="form-field" id="fixed-deadline-field" hidden><label for="offer-fixed-deadline">Accept and pay by</label><input id="offer-fixed-deadline" type="date"></div>
@@ -1051,6 +1052,8 @@ function validateCampaign(mode, input = {}) {
   if (mode === 'renewal' && !deadline) throw new Error('Add the renewal deadline.');
   if (mode === 'offer' && Boolean(deadline) === Boolean(hoursInput)) throw new Error('For an offer, add either a deadline date or an acceptance window in hours.');
   if (deadline) campaignDate_(deadline, 'deadline date');
+  const parentViewingWeek = mode === 'renewal' ? String(input.parentViewingWeek || '').trim() : '';
+  if (parentViewingWeek) campaignDate_(parentViewingWeek, 'parents’ viewing week');
   let offerExpiryHours = null;
   if (mode === 'offer' && hoursInput) {
     if (!/^\d+$/.test(hoursInput) || Number(hoursInput) < 1 || Number(hoursInput) > 8760) throw new Error('Use an acceptance window from 1 to 8760 whole hours.');
@@ -1071,9 +1074,10 @@ function validateCampaign(mode, input = {}) {
     if (!schedule.sessionCount || schedule.sessions.some(session => !session.count)) throw new Error('The date range and exclusions leave a weekly session with no dates in ' + name + '.');
     return item;
   });
-  const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, offerExpiryHours, classes: sortCampaignClasses(classes) };
+  const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, parentViewingWeek, offerExpiryHours, classes: sortCampaignClasses(classes) };
   for (const key of ['additionalInfo','paymentInstructions','membershipNote','refundPolicy','whatToBring','location','parentViewing','informationButtonText','paymentButtonText','membershipButtonText','uniformButtonText','policyButtonText']) output[key] = String(input[key] || '').trim();
-  for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(input[key], key.replace('Url', '') + ' button');
+  for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(mode === 'renewal' && key === 'mapUrl' ? '' : input[key], key.replace('Url', '') + ' button');
+  if (mode === 'renewal') { output.location = ''; output.parentViewing = ''; }
   return output;
 }
 
@@ -1134,9 +1138,13 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   addButton(campaign.policyUrl, campaign.policyButtonText || 'Read club rules');
   addText(campaign.whatToBring, 'What to wear & bring');
   addButton(campaign.uniformUrl, campaign.uniformButtonText || 'View leotards & uniform');
-  addText(campaign.location, 'Location');
-  addButton(campaign.mapUrl, 'Google Maps');
-  addText(campaign.parentViewing, 'Parent viewing');
+  if (mode === 'renewal') {
+    if (campaign.parentViewingWeek) addText('Week of ' + campaignDateText_(campaign.parentViewingWeek) + '.', 'Parents’ viewing');
+  } else {
+    addText(campaign.location, 'Location');
+    addButton(campaign.mapUrl, 'Google Maps');
+    addText(campaign.parentViewing, 'Parent viewing');
+  }
   addButton(campaign.informationUrl, campaign.informationButtonText || (mode === 'renewal' ? 'Renewal information' : 'More information'));
   return { subject, html, plain: plain.join('\n\n') };
 }
@@ -3247,7 +3255,7 @@ const draftsStorageKey = 'club-email-builder-drafts-v2';
 const basicFields = ['subject', 'body', 'button-text', 'button-url'];
 const campaignFields = {
   'term-name': 'termName', 'term-start': 'startDate', 'term-end': 'endDate',
-  'payment-deadline': 'deadline', 'offer-expiry-hours': 'offerExpiryHours',
+  'parent-viewing-week': 'parentViewingWeek', 'payment-deadline': 'deadline', 'offer-expiry-hours': 'offerExpiryHours',
   'additional-info': 'additionalInfo', 'payment-instructions': 'paymentInstructions', 'membership-note': 'membershipNote',
   'membership-url': 'membershipUrl', 'membership-button-text': 'membershipButtonText',
   'policy-url': 'policyUrl', 'policy-button-text': 'policyButtonText', 'uniform-button-text': 'uniformButtonText',
@@ -3460,6 +3468,12 @@ function restoreDeadlineSettings(draft) {
 function updateDeadlineFields() {
   const offer = emailMode === 'offer'; const hours = offer && $('deadline-kind').value === 'hours';
   $('renewal-deadline-controls').hidden = emailMode !== 'renewal';
+  $('renewal-viewing-controls').hidden = emailMode !== 'renewal';
+  $('parent-viewing-week').disabled = emailMode !== 'renewal';
+  for (const id of ['location', 'map-url', 'parent-viewing']) {
+    $(id).closest('.form-field').hidden = emailMode === 'renewal';
+    $(id).disabled = emailMode === 'renewal';
+  }
   $('offer-deadline-details').hidden = !offer;
   $('fixed-deadline-field').hidden = hours; $('hours-deadline-field').hidden = !hours;
   $('payment-deadline').disabled = emailMode !== 'renewal';

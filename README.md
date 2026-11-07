@@ -185,3 +185,5 @@ Preserve unrelated menu calls when connecting other projects. The exact call app
 `generateScript` remains the standalone core used by rendering/sender tests; the app’s copy and download path uses `generateCompanionScript`. Automated tests cover eight coexisting companions, existing legacy campaign globals and a basic composer opening function, all 30 SWL code-selected sends, reminder isolation, cancellation, dry runs and offline/public bundle parity. These are mock-service tests, not live email deliveries.
 
 Captured source and the catalog rebuild helpers are included in `scripts/website-sources/`. To rebuild from the archived originals, run `node scripts/website-sources/build-catalog.mjs`, then rerun the tests and standalone build.
+
+Renewals and reminders (v3.0.1) omit venue/address and Google Maps. Parents’ viewing uses the optional **Parents’ viewing — week of** date in Term & dates; leaving it blank omits that section. Older saved viewing prose is ignored for renewals. Offers retain their existing location and viewing information. Regenerate and replace previously copied renewal scripts to apply this change.
