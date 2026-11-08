@@ -121,6 +121,7 @@
                 <div class="form-field" id="fixed-deadline-field" hidden><label for="offer-fixed-deadline">Accept and pay by</label><input id="offer-fixed-deadline" type="date"></div>
                 <div class="form-field" id="hours-deadline-field"><label for="offer-expiry-hours">Hours to accept and pay</label><input id="offer-expiry-hours" type="number" min="1" max="8760" step="1" inputmode="numeric" placeholder="48"><p class="field-hint after-input">Families have this amount of time from receiving the email to accept and pay.</p></div>
               </div></details>
+              <div id="bacs-fields" class="setup-section" hidden><h3>Bank transfer details</h3><p class="field-hint">Fulham offers BACS or cash. These details are saved in this browser and your configuration backup.</p><div class="form-field"><label for="bank-account-name">Account name</label><input id="bank-account-name" autocomplete="off"></div><div class="field-pair"><div class="form-field"><label for="bank-sort-code">Sort code</label><input id="bank-sort-code" placeholder="00-00-00" autocomplete="off"></div><div class="form-field"><label for="bank-account-number">Account number</label><input id="bank-account-number" inputmode="numeric" maxlength="8" autocomplete="off"></div></div><div class="form-field"><label for="bank-reference">Payment reference</label><input id="bank-reference" placeholder="{{child}}"></div></div>
               <details id="date-details" class="date-details"><summary><span>Check dates &amp; cancel sessions<small id="calendar-summary">Add your term dates first</small></span><span aria-hidden="true">＋</span></summary><div class="date-details-body"><p class="field-hint">Untick a day to cancel it for every class, or untick a whole week. Each class’s actual dates and session count are shown below.</p><div class="date-legend"><span><i></i>Included</span><span><i class="cancelled"></i>Cancelled</span></div><p id="calendar-error" class="field-error" role="status" hidden></p><div id="term-calendar" class="term-calendar"></div></div></details>
             </section>
             <section class="setup-section" aria-labelledby="classes-heading">
@@ -1041,8 +1042,9 @@ function campaignHttps_(value, label, required = false) {
   return text;
 }
 
-function validateCampaign(mode, input = {}) {
+function validateCampaign(mode, input = {}, clubId = '') {
   if (!['renewal', 'offer'].includes(mode)) throw new Error('Choose Renewal or Offer for a class campaign.');
+  const paymentMethod = clubId === 'fulham' || (!clubId && input.paymentMethod === 'bacs') ? 'bacs' : 'online';
   const range = campaignRange_(input);
   const termName = String(input.termName || '').trim();
   if (!termName) throw new Error('Give this term a name.');
@@ -1069,15 +1071,20 @@ function validateCampaign(mode, input = {}) {
     if (!name) throw new Error('Give each class a name.');
     const feeText = cls.fee === undefined || cls.fee === null ? '' : String(cls.fee).trim();
     if (!/^\d+(?:\.\d{1,2})?$/.test(feeText) || !Number.isFinite(Number(feeText))) throw new Error('Add the total term fee for ' + name + ', using pounds and up to two decimal places.');
-    const item = { id, name, ...(cls.regularKey ? { regularKey: String(cls.regularKey) } : {}), fee: Number(feeText), paymentUrl: campaignHttps_(cls.paymentUrl, name + ' payment', true), sessions: campaignSessions_(cls.sessions), feeNote: String(cls.feeNote || '').trim() };
+    const item = { id, name, ...(cls.regularKey ? { regularKey: String(cls.regularKey) } : {}), fee: Number(feeText), paymentUrl: paymentMethod === 'bacs' ? '' : campaignHttps_(cls.paymentUrl, name + ' payment', true), sessions: campaignSessions_(cls.sessions), feeNote: String(cls.feeNote || '').trim() };
     const schedule = getClassSchedule({ startDate: range.start.text, endDate: range.end.text, excludedDates }, item);
     if (!schedule.sessionCount || schedule.sessions.some(session => !session.count)) throw new Error('The date range and exclusions leave a weekly session with no dates in ' + name + '.');
     return item;
   });
-  const output = { termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, parentViewingWeek, offerExpiryHours, classes: sortCampaignClasses(classes) };
+  const output = { paymentMethod, termName, startDate: range.start.text, endDate: range.end.text, excludedDates, excludedRanges: [], deadline, parentViewingWeek, offerExpiryHours, classes: sortCampaignClasses(classes) };
   for (const key of ['additionalInfo','paymentInstructions','membershipNote','refundPolicy','whatToBring','location','parentViewing','informationButtonText','paymentButtonText','membershipButtonText','uniformButtonText','policyButtonText']) output[key] = String(input[key] || '').trim();
-  for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(mode === 'renewal' && key === 'mapUrl' ? '' : input[key], key.replace('Url', '') + ' button');
-  if (mode === 'renewal') { output.location = ''; output.parentViewing = ''; }
+  for (const key of ['mapUrl','uniformUrl','informationUrl','membershipUrl','policyUrl']) output[key] = campaignHttps_(mode === 'renewal' && ['mapUrl','uniformUrl','informationUrl','policyUrl'].includes(key) ? '' : input[key], key.replace('Url', '') + ' button');
+  if (mode === 'renewal') { output.location = ''; output.parentViewing = ''; output.refundPolicy = ''; output.whatToBring = ''; output.paymentInstructions = ''; }
+  for (const key of ['bankAccountName','bankSortCode','bankAccountNumber','bankReference']) output[key] = String(input[key] || '').trim();
+  if (paymentMethod === 'bacs') {
+    if (!output.bankAccountName || !/^\d{2}[- ]?\d{2}[- ]?\d{2}$/.test(output.bankSortCode) || !/^\d{8}$/.test(output.bankAccountNumber)) throw new Error('Fill in the BACS account name, six-digit sort code and eight-digit account number.');
+    output.bankReference ||= '{{child}}';
+  }
   return output;
 }
 
@@ -1129,23 +1136,39 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
     html += button(text, url); plain.push(text + ':\n' + url);
   };
   addText(cls.feeNote);
-  addText(campaign.membershipNote, 'Membership');
-  addButton(campaign.membershipUrl, campaign.membershipButtonText || 'Membership information');
-  addText(campaign.paymentInstructions, mode === 'renewal' ? 'Payment' : 'How to accept');
-  addButton(cls.paymentUrl, campaign.paymentButtonText || (mode === 'renewal' ? 'Pay & renew place' : 'Accept & pay'));
+  if (mode === 'offer' || campaign.membershipUrl) {
+    addText(campaign.membershipNote, 'Membership');
+    addButton(campaign.membershipUrl, campaign.membershipButtonText || 'Membership information');
+  }
+  if (mode === 'renewal' || campaign.paymentMethod === 'bacs') {
+    addText(mode === 'renewal' ? 'Choose either of the options below to renew {{child}}’s place. Please reply by {{deadline}} if you would like to pay cash.' : 'Please reply to accept {{child}}’s place by the acceptance deadline shown above, then choose one of the payment options below.', mode === 'renewal' ? 'How to renew' : 'How to accept');
+    if (campaign.paymentMethod === 'bacs') {
+      addText('Use the bank details below, then reply to this email to let us know you have paid by BACS.', 'Option 1 — Bank transfer (BACS)');
+      const bankRows = [['Account name', campaign.bankAccountName], ['Sort code', campaign.bankSortCode], ['Account number', campaign.bankAccountNumber], ['Reference', personal(campaign.bankReference || '{{child}}')]];
+      html += '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:12px 0 20px;border:1px solid ' + accent + ';border-radius:' + design.panelRadius + ';background:' + design.panelBackground + ';"><tr><td style="padding:20px 22px 2px;">' + bankRows.map(([label,value]) => campaignComponent_(design.paragraph, { PARAGRAPH: '<strong>' + esc(label) + ':</strong> ' + esc(value) })).join('') + '</td></tr></table>';
+      plain.push(bankRows.map(([label,value]) => label + ': ' + value).join('\n'));
+    } else {
+      addText('Pay securely using the button below by {{deadline}}.', 'Option 1 — Pay online');
+      addButton(cls.paymentUrl, campaign.paymentButtonText || 'Pay & renew place');
+    }
+    addText('You can pay cash before the end of the current term or on the first day of the new term. Please reply to this email to let us know you would like to pay cash, then hand the payment to a Head Coach in an envelope labelled with {{child}}’s name and class.', 'Option 2 — Pay cash');
+  } else {
+    addText(campaign.paymentInstructions, 'How to accept');
+    addButton(cls.paymentUrl, campaign.paymentButtonText || 'Accept & pay');
+  }
   addText(campaign.additionalInfo, 'Further information');
-  addText(campaign.refundPolicy, 'Payment & cancellation policy');
-  addButton(campaign.policyUrl, campaign.policyButtonText || 'Read club rules');
-  addText(campaign.whatToBring, 'What to wear & bring');
-  addButton(campaign.uniformUrl, campaign.uniformButtonText || 'View leotards & uniform');
   if (mode === 'renewal') {
     if (campaign.parentViewingWeek) addText('Week of ' + campaignDateText_(campaign.parentViewingWeek) + '.', 'Parents’ viewing');
   } else {
+    addText(campaign.refundPolicy, 'Payment & cancellation policy');
+    addButton(campaign.policyUrl, campaign.policyButtonText || 'Read club rules');
+    addText(campaign.whatToBring, 'What to wear & bring');
+    addButton(campaign.uniformUrl, campaign.uniformButtonText || 'View leotards & uniform');
     addText(campaign.location, 'Location');
     addButton(campaign.mapUrl, 'Google Maps');
     addText(campaign.parentViewing, 'Parent viewing');
+    addButton(campaign.informationUrl, campaign.informationButtonText || 'More information');
   }
-  addButton(campaign.informationUrl, campaign.informationButtonText || (mode === 'renewal' ? 'Renewal information' : 'More information'));
   return { subject, html, plain: plain.join('\n\n') };
 }
 
@@ -1427,7 +1450,7 @@ const TERM_PRESETS = {
 };
 
 // Verified public Square checkout links for Spring 2027 renewal tuition only.
-// Their fixed amounts exclude new-member charges, so never reuse them in Offers.
+// Renewal amounts exclude membership; SWL offers have separate verified links.
 const TERM_PAYMENT_LINKS_VERSION = 1;
 const SPRING_RENEWAL_PAYMENT_LINKS = {
   swl: {
@@ -1451,12 +1474,52 @@ const SPRING_RENEWAL_PAYMENT_LINKS = {
     advancedacro: { url: 'https://square.link/u/v3kQiVko', amountPence: 16000, title: 'Apex Dance Club Advanced Acro - Spring 2027 Renewal (10 weeks)' }
   }
 };
+const SPRING_OFFER_PAYMENT_LINKS = {
+  "swl": {
+    "beginners": {
+      "url": "https://square.link/u/teaniHCb",
+      "amountPence": 26000,
+      "title": "SWL Beginners - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "intermediate": {
+      "url": "https://square.link/u/YnN0vXt8",
+      "amountPence": 29300,
+      "title": "SWL Intermediate - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "advanced": {
+      "url": "https://square.link/u/DBidUHek",
+      "amountPence": 32600,
+      "title": "SWL Advanced - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "junioradvanced": {
+      "url": "https://square.link/u/gBI3HGa9",
+      "amountPence": 32600,
+      "title": "SWL Junior Advanced Class - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "juniorsquad": {
+      "url": "https://square.link/u/g8ZdKLhT",
+      "amountPence": 39200,
+      "title": "SWL Junior Squad - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "floorvault": {
+      "url": "https://square.link/u/RT7zfE1v",
+      "amountPence": 43600,
+      "title": "SWL Floor & Vault Squad - Spring 2027 New Member (11 weeks + membership)"
+    },
+    "seniorelite": {
+      "url": "https://square.link/u/t8Ea5VXW",
+      "amountPence": 84300,
+      "title": "SWL Senior Elite Squad - Spring 2027 New Member (11 weeks + membership)"
+    }
+  }
+};
+
 function hasRenewalPaymentLinks(clubId, mode) {
   return mode === 'renewal' && Object.prototype.hasOwnProperty.call(SPRING_RENEWAL_PAYMENT_LINKS, clubId);
 }
 
 function validateKnownPaymentAmounts(campaign) {
-  const verified = Object.values(SPRING_RENEWAL_PAYMENT_LINKS).flatMap(Object.values);
+  const verified = [...Object.values(SPRING_RENEWAL_PAYMENT_LINKS), ...Object.values(SPRING_OFFER_PAYMENT_LINKS)].flatMap(Object.values);
   for (const cls of campaign.classes || []) {
     let url;
     try { const parsed = new URL(cls.paymentUrl); url = parsed.origin + parsed.pathname.replace(/\/+$/, ''); } catch { continue; }
@@ -1534,11 +1597,12 @@ function getTermFeeHint(clubId, mode) {
 }
 
 function applyRenewalPaymentLinks_(clubId, mode, draft, force) {
-  if (!hasRenewalPaymentLinks(clubId, mode) || !termMatchesPreset_(draft, TERM_PRESETS[clubId])) return draft;
+  const links = mode === 'offer' ? SPRING_OFFER_PAYMENT_LINKS[clubId] : mode === 'renewal' ? SPRING_RENEWAL_PAYMENT_LINKS[clubId] : null;
+  if (!links || !termMatchesPreset_(draft, TERM_PRESETS[clubId])) return draft;
   if (!force && Number(draft.termDefaults?.paymentLinksVersion) >= TERM_PAYMENT_LINKS_VERSION) return draft;
   const cards = (draft.cards || []).map(card => {
     const spec = termRegularSpec_(clubId, card);
-    const payment = spec && SPRING_RENEWAL_PAYMENT_LINKS[clubId][spec.key];
+    const payment = spec && links[spec.key];
     const fee = termValue_(card.fee);
     // A checkout charges its fixed amount: never attach it to a blank, edited
     // or invalid fee, even when its class name and schedule still match.
@@ -1851,7 +1915,7 @@ async function renderPreview(clubId, options, names = { child: 'Joseph', parent:
   let email;
   if (mode === 'basic') email = renderers[clubId](String(names.parent ?? ''), String(names.child ?? ''), contentForPerson);
   else {
-    const campaign = validateKnownPaymentAmounts(validateCampaign(mode, options.campaign));
+    const campaign = validateKnownPaymentAmounts(validateCampaign(mode, options.campaign, clubId));
     const cls = options.previewClassId ? campaign.classes.find(item => item.id === options.previewClassId) : campaign.classes[0];
     if (!cls) throw new Error('Choose a valid class for the preview.');
     const details = renderCampaignContent(mode, campaign, cls, content, names, { ...clubFor(clubId), design: getClubEmailDesign(clubId) });
@@ -1867,7 +1931,7 @@ async function renderPreview(clubId, options, names = { child: 'Joseph', parent:
 async function generateCampaignScript(clubId, options) {
   const renewalVariant = renewalVariantFor(options.mode, options.renewalVariant);
   const content = validateContent({ subject: options.subject, body: options.body });
-  const campaign = validateKnownPaymentAmounts(validateCampaign(options.mode, options.campaign));
+  const campaign = validateKnownPaymentAmounts(validateCampaign(options.mode, options.campaign, clubId));
   const club = clubFor(clubId);
   const prefix = { swl: 'Swl', fulham: 'Fulham', apex: 'Apex', apexdance: 'ApexDance' }[clubId];
   let source = await loadTemplate(clubId);
@@ -1982,7 +2046,7 @@ async function generateCompanionScript(clubId, options) {
   return options?.mode === 'renewal' ? wrapRenewalCompanion(source, clubId, options.renewalVariant || 'main') : source;
 }
 
-const { MANAGEMENT_STORAGE_KEY, MANAGEMENT_VERSION, BACKUP_FORMAT, BACKUP_VERSION, EMAIL_DRAFT_KEYS, MANAGEMENT_CLUB_IDS, MAX_BACKUP_BYTES, MAX_MANAGEMENT_BYTES, cloneConfigurationData, countTeachingWeeks, validateClubSettings, createDefaultClubSettings, createManagementState, validateManagementState, updateClubSettings, saveWebsiteTemplate, deleteWebsiteTemplate, loadManagementState, saveManagementState, createConfigurationBackup, parseConfigurationBackup, inspectConfigurationBackup, restoreConfigurationBackup, applyClubSettingsToEmailDraft, createManagementStore } = (() => {
+const { MANAGEMENT_STORAGE_KEY, MANAGEMENT_VERSION, BACKUP_FORMAT, BACKUP_VERSION, EMAIL_DRAFT_KEYS, MANAGEMENT_CLUB_IDS, MAX_BACKUP_BYTES, MAX_MANAGEMENT_BYTES, cloneConfigurationData, calculateClubClassPrices, countTeachingWeeks, validateClubSettings, createDefaultClubSettings, createManagementState, validateManagementState, updateClubSettings, saveWebsiteTemplate, deleteWebsiteTemplate, loadManagementState, saveManagementState, createConfigurationBackup, parseConfigurationBackup, inspectConfigurationBackup, restoreConfigurationBackup, applyClubSettingsToEmailDraft, createManagementStore } = (() => {
 
 // Configuration stays on this browser until the owner explicitly exports a backup.
 // Password/access records and unrelated localStorage entries are never included.
@@ -2110,7 +2174,28 @@ function normalizeClasses(input, clubId) {
       return { id: sessionId, weekday, startTime, endTime };
     });
     return { id: classId, regularKey, name: optionalText(card.name, 'class name', 200), enabled: card.enabled !== false, combined: card.combined === true,
-      fee: money(card.fee, 'Class fee'), paymentUrl: optionalText(card.paymentUrl, 'payment link', 4000), feeNote: optionalText(card.feeNote, 'fee note', 5000), sessions };
+      weeklyRate: money(card.weeklyRate ?? (TERM_WEEKLY_RATES[clubId]?.[regularKey.split(':')[1]]?.pence / 100 || ''), 'Weekly rate'), fee: money(card.fee, 'Class fee'), offerPaymentUrl: optionalText(card.offerPaymentUrl ?? SPRING_OFFER_PAYMENT_LINKS[clubId]?.[regularKey.split(':')[1]]?.url, 'New member payment link', 4000), paymentUrl: optionalText(card.paymentUrl, 'payment link', 4000), feeNote: optionalText(card.feeNote, 'fee note', 5000), sessions };
+  });
+}
+function calculateClubClassPrices(settings, clubId) {
+  const membership = ['swl', 'fulham'].includes(clubId) ? Number(settings.details?.membershipFee ?? 40) : 0;
+  return (settings.classes || []).map(card => {
+    const rate = card.weeklyRate ?? (TERM_WEEKLY_RATES[clubId]?.[String(card.regularKey || '').split(':')[1]]?.pence / 100 || '');
+    const output = { ...card, weeklyRate: rate, priceGroups: [] };
+    if (rate === '' || rate == null) { output.newMemberFee = card.fee === '' ? '' : (Number(card.fee) + membership).toFixed(2); return output; }
+    if (!settings.term?.startDate || !settings.term?.endDate) return { ...output, fee: '', newMemberFee: '', priceIssue: 'Choose term dates to calculate prices.' };
+    try {
+      const schedule = getClassSchedule(settings.term, card);
+      const ratePence = Math.round(Number(rate) * 100);
+      if (!Number.isFinite(ratePence) || ratePence < 0) throw new Error('Enter a valid weekly rate.');
+      if (card.combined) output.priceGroups = [{ units: schedule.teachingWeeks, fee: (ratePence * schedule.teachingWeeks / 100).toFixed(2), sessions: card.sessions }];
+      else output.priceGroups = schedule.sessions.map((row, i) => ({ units: row.count, fee: (ratePence * row.count / 100).toFixed(2), sessions: [card.sessions[i]] }));
+      const totals = [...new Set(output.priceGroups.map(group => group.fee))];
+      output.fee = totals.length === 1 ? totals[0] : '';
+      output.newMemberFee = output.fee === '' ? '' : ((Math.round(Number(output.fee) * 100) + Math.round(membership * 100)) / 100).toFixed(2);
+      output.priceIssue = totals.length > 1 ? 'Different class days have different numbers of sessions. Email classes will be priced separately; review website prices.' : '';
+      return output;
+    } catch (error) { return { ...output, fee: '', newMemberFee: '', priceIssue: 'Complete the class dates and timetable to calculate the price.' }; }
   });
 }
 // Count weeks containing at least one enabled class. A cancelled Monday alone
@@ -2151,7 +2236,8 @@ function validateClubSettings(input, clubId) {
   const membershipFee = money(details.membershipFee ?? (['swl', 'fulham'].includes(clubId) ? 40 : 0), 'Website membership fee');
   if (!membershipFee) fail('Enter a website membership fee, or 0 when it is paid separately.');
   details.membershipFee = Number(membershipFee);
-  const term = normalizeTerm(data.term || {}), classes = normalizeClasses(data.classes || [], clubId);
+  const term = normalizeTerm(data.term || {});
+  const classes = calculateClubClassPrices({ term, classes: normalizeClasses(data.classes || [], clubId), details }, clubId);
   term.totalWeeks = countTeachingWeeks({ term, classes });
   return { term, classes, details,
     defaultLabel: optionalText(data.defaultLabel, 'default label', 200) };
@@ -2285,14 +2371,20 @@ function restoreConfigurationBackup(storage, input, { restoreEmailDrafts = false
 }
 
 // Returns a draft for the existing email UI to accept explicitly. It never writes
-// storage, guesses price changes, or rewrites the subject/message or club policy.
-function applyClubSettingsToEmailDraft(draft, settings, { clubId = 'swl', includeClasses = false, includeDeadline = true, includeDetails = false } = {}) {
+// storage or rewrites the subject/message. Prices come from the saved rates and dates.
+function applyClubSettingsToEmailDraft(draft, settings, { clubId = 'swl', includeClasses = false, includeDeadline = true, includeDetails = false, mode = 'renewal' } = {}) {
   const original = cloneConfigurationData(object(draft, 'Email draft')), club = validateClubSettings(settings, clubId), term = club.term;
-  const detailFields = includeDetails ? Object.fromEntries(Object.entries(club.details).filter(([key]) => !['termName', 'startDate', 'endDate', 'deadline', 'excludedDates', 'excludedRanges', 'classes'].includes(key))) : {};
+  const detailFields = includeDetails ? Object.fromEntries(Object.entries(club.details).filter(([key]) => !['termName', 'startDate', 'endDate', 'deadline', 'excludedDates', 'excludedRanges', 'classes'].includes(key) && !(mode === 'offer' && ['refundPolicy','paymentInstructions','membershipNote','membershipUrl','membershipButtonText','paymentButtonText','parentViewing'].includes(key)))) : {};
   const campaign = { ...(original.campaign || {}), ...cloneConfigurationData(detailFields), termName: term.termName, startDate: term.startDate, endDate: term.endDate, excludedDates: [...term.excludedDates], excludedRanges: [] };
   if (includeDeadline) campaign.deadline = term.deadline;
   const next = { ...original, campaign, termChoice: term.season || 'saved', savedTermLabel: term.season ? '' : term.termName, excludedDates: [...term.excludedDates] };
-  if (includeClasses) next.cards = cloneConfigurationData(club.classes);
+  // BACS and viewing details are term setup, not offer-policy replacements.
+  for (const field of ['bankAccountName','bankSortCode','bankAccountNumber','bankReference','parentViewingWeek']) if (club.details[field] !== undefined) campaign[field] = club.details[field];
+  if (mode === 'offer') { campaign.deadline = original.campaign?.deadline || ''; campaign.offerExpiryHours = campaign.deadline ? '' : (original.campaign?.offerExpiryHours || '48'); }
+  if (includeClasses) next.cards = club.classes.flatMap(card => {
+    const groups = card.priceGroups?.length && new Set(card.priceGroups.map(group => group.fee)).size > 1 ? card.priceGroups : [{ fee: card.fee, sessions: card.sessions }];
+    return groups.map((group, index) => ({ ...cloneConfigurationData(card), id: groups.length > 1 ? card.id + 'g' + index : card.id, sessions: cloneConfigurationData(group.sessions), fee: mode === 'offer' && group.fee !== '' ? (Number(group.fee) + (['swl', 'fulham'].includes(clubId) ? Number(club.details.membershipFee) : 0)).toFixed(2) : group.fee, paymentUrl: clubId === 'fulham' ? '' : mode === 'offer' ? (card.offerPaymentUrl || '') : card.paymentUrl }));
+  });
   return next;
 }
 function createManagementStore(storage = null) {
@@ -2301,7 +2393,7 @@ function createManagementStore(storage = null) {
   let state = loadManagementState(target);
   const persist = next => { state = saveManagementState(target, next); return cloneConfigurationData(state); };
   return {
-    persistent: Boolean(storage), reload() { state = loadManagementState(target); return cloneConfigurationData(state); }, getState: () => cloneConfigurationData(state), getClubSettings: clubId => cloneConfigurationData(state.clubs[knownClub(clubId)]),
+    calculatePrices: calculateClubClassPrices, persistent: Boolean(storage), reload() { state = loadManagementState(target); return cloneConfigurationData(state); }, getState: () => cloneConfigurationData(state), getClubSettings: clubId => cloneConfigurationData(state.clubs[knownClub(clubId)]),
     saveClubSettings: (clubId, patch) => persist(updateClubSettings(state, clubId, patch)),
     saveTemplate: template => persist(saveWebsiteTemplate(state, template)), deleteTemplate: instanceId => persist(deleteWebsiteTemplate(state, instanceId)),
     selectClub: clubId => persist({ ...state, selectedClub: knownClub(clubId) }),
@@ -2310,7 +2402,7 @@ function createManagementStore(storage = null) {
   };
 }
 
-return { MANAGEMENT_STORAGE_KEY, MANAGEMENT_VERSION, BACKUP_FORMAT, BACKUP_VERSION, EMAIL_DRAFT_KEYS, MANAGEMENT_CLUB_IDS, MAX_BACKUP_BYTES, MAX_MANAGEMENT_BYTES, cloneConfigurationData, countTeachingWeeks, validateClubSettings, createDefaultClubSettings, createManagementState, validateManagementState, updateClubSettings, saveWebsiteTemplate, deleteWebsiteTemplate, loadManagementState, saveManagementState, createConfigurationBackup, parseConfigurationBackup, inspectConfigurationBackup, restoreConfigurationBackup, applyClubSettingsToEmailDraft, createManagementStore };
+return { MANAGEMENT_STORAGE_KEY, MANAGEMENT_VERSION, BACKUP_FORMAT, BACKUP_VERSION, EMAIL_DRAFT_KEYS, MANAGEMENT_CLUB_IDS, MAX_BACKUP_BYTES, MAX_MANAGEMENT_BYTES, cloneConfigurationData, calculateClubClassPrices, countTeachingWeeks, validateClubSettings, createDefaultClubSettings, createManagementState, validateManagementState, updateClubSettings, saveWebsiteTemplate, deleteWebsiteTemplate, loadManagementState, saveManagementState, createConfigurationBackup, parseConfigurationBackup, inspectConfigurationBackup, restoreConfigurationBackup, applyClubSettingsToEmailDraft, createManagementStore };
 })();
 const { validateWebsiteUrl, validateTemplate, getTemplateDefaults, validateWebsiteValues, applyCentralSettings, generateWebsiteCode, buildPreviewDocument } = (() => {
 // Original Squarespace snippets stay authoritative. All edits are explicit ranges
@@ -3111,15 +3203,17 @@ function initManagementUI(deps = {}) {
   });
   copyFromEmail.hidden = !deps.onReadEmailSettings;
   const includeClasses = mgElement('input', { id: 'mg-email-classes', type: 'checkbox' });
+  includeClasses.checked = true;
   const includeDetails = mgElement('input', { id: 'mg-email-details', type: 'checkbox' });
-  const applyEmail = mgButton('Use saved settings in email renewal', async () => {
+  const emailModeChoice = mgElement('select', { id: 'mg-email-mode' }, [mgElement('option', { value: 'renewal', text: 'Renewal / reminder' }), mgElement('option', { value: 'offer', text: 'New-member offer' })]);
+  const applyEmail = mgButton('Use saved settings in email', async () => {
     if (!deps.onApplyEmailSettings) return;
     try {
-      await deps.onApplyEmailSettings(selectedClub, clubSettings(), { includeClasses: includeClasses.checked, includeDetails: includeDetails.checked, includeDeadline: true });
+      await deps.onApplyEmailSettings(selectedClub, clubSettings(), { mode: emailModeChoice.value, includeClasses: includeClasses.checked, includeDetails: includeDetails.checked, includeDeadline: true });
       selectTab(0); mgStatus(settingsStatus, 'Saved settings applied to the renewal draft. Review it and create a fresh preview.');
     } catch (error) { mgStatus(settingsStatus, error.message, true); }
   });
-  const emailBridge = mgElement('section', { className: 'mg-email-bridge', hidden: !deps.onApplyEmailSettings }, [mgElement('h3', { text: 'Use the same term in your emails' }), mgNote('Apply the saved term dates, exclusions and deadline to this club’s renewal draft. Choose whether to replace its class prices, times and club information too.'), mgElement('label', { className: 'mg-check', for: includeClasses.id }, [includeClasses, 'Also apply classes, fees and payment links']), mgElement('label', { className: 'mg-check', for: includeDetails.id }, [includeDetails, 'Also apply club information']), applyEmail]);
+  const emailBridge = mgElement('section', { className: 'mg-email-bridge', hidden: !deps.onApplyEmailSettings }, [mgElement('h3', { text: 'Use the same term in your emails' }), mgNote('Apply the saved term dates, exclusions and deadline to this club’s chosen email draft. Choose whether to replace its class prices, times and club information too.'), mgElement('label', { className: 'mg-check', for: includeClasses.id }, [includeClasses, 'Also apply classes, fees and payment links']), mgElement('label', { className: 'mg-check', for: includeDetails.id }, [includeDetails, 'Also apply club information']), mgField('Email type', emailModeChoice), applyEmail]);
   const settingsEditor = mgElement('section', { className: 'panel mg-editor' }, [mgElement('div', { className: 'mg-panel-title' }, [mgElement('h2', { text: 'Saved club settings' }), copyFromEmail]), centralForm, emailBridge]);
   const backupStatus = mgElement('p', { className: 'mg-status', role: 'status' });
   const backupFile = mgElement('input', { id: 'mg-backup-file', type: 'file', accept: '.json,application/json' });
@@ -3166,6 +3260,21 @@ function initManagementUI(deps = {}) {
     if (type === 'checkbox') return mgElement('label', { className: 'mg-check', for: id }, [input, label]);
     return mgField(label, input);
   }
+  function refreshCentralPrices() {
+    if (!centralDraft || !store.calculatePrices) return;
+    const computed = store.calculatePrices(centralDraft, selectedClub);
+    computed.forEach((card, index) => {
+      Object.assign(centralDraft.classes[index], card);
+      const output = centralFields.querySelector('[data-price-index="' + index + '"]');
+      const summary = centralFields.querySelector('[data-class-summary="' + index + '"]');
+      if (summary) summary.textContent = (card.name || 'Class ' + (index + 1)) + (card.fee ? ' · £' + card.fee : '');
+      if (output) output.textContent = card.priceIssue || ('Renewal £' + (card.fee || '—') + ' · New member £' + (card.newMemberFee || '—'));
+      const fee = centralFields.querySelector('[data-fee-index="' + index + '"]');
+      if (fee) { fee.readOnly = card.weeklyRate !== '' && card.weeklyRate != null; if (fee.readOnly) fee.value = card.fee; }
+    });
+  }
+  centralForm.addEventListener('input', refreshCentralPrices);
+  centralForm.addEventListener('change', refreshCentralPrices);
   function stashCentralDraft() { if (centralDraft && centralDraftClub) centralWorkingDrafts.set(centralDraftClub, mgClone(centralDraft)); }
   function renderCentralSettings() {
     stashCentralDraft();
@@ -3175,14 +3284,15 @@ function initManagementUI(deps = {}) {
   function renderCentralFields() {
     centralFields.replaceChildren(); if (!centralDraft) return;
     centralDraft.term ||= {}; centralDraft.classes ||= []; centralDraft.details ||= {};
+    refreshCentralPrices();
     const term = centralDraft.term;
-    const dates = mgElement('section', { className: 'mg-central-section' }, [mgElement('h3', { text: 'Term dates' }), mgElement('div', { className: 'mg-two-fields' }, [centralInput('Term', term, 'season', 'select', ['Spring', 'Summer', 'Autumn']), centralInput('Year', term, 'year', 'number')]), mgElement('div', { className: 'mg-two-fields' }, [centralInput('First date', term, 'startDate', 'date'), centralInput('Last date', term, 'endDate', 'date')]), centralInput('Renewal payment deadline', term, 'deadline', 'date')]);
+    const dates = mgElement('section', { className: 'mg-central-section' }, [mgElement('h3', { text: 'Term dates' }), mgElement('div', { className: 'mg-two-fields' }, [centralInput('Term', term, 'season', 'select', ['Spring', 'Summer', 'Autumn']), centralInput('Year', term, 'year', 'number')]), mgElement('div', { className: 'mg-two-fields' }, [centralInput('First date', term, 'startDate', 'date'), centralInput('Last date', term, 'endDate', 'date')]), centralInput('Renewal payment deadline', term, 'deadline', 'date'), centralInput('Parents’ viewing — week of', centralDraft.details, 'parentViewingWeek', 'date')]);
     const excluded = mgElement('textarea', { id: 'mg-excluded-dates', rows: 3, placeholder: '2027-02-15\n2027-02-16' });
     excluded.value = (term.excludedDates || []).join('\n');
     const cancelledList = mgElement('div', { className: 'mg-cancelled-dates' });
     const cancelDate = mgElement('input', { id: 'mg-cancel-date', type: 'date', min: term.startDate, max: term.endDate });
     const renderCancelled = () => {
-      cancelledList.replaceChildren();
+      refreshCentralPrices(); cancelledList.replaceChildren();
       for (const value of term.excludedDates || []) {
         const parsed = new Date(value + 'T12:00:00Z');
         const label = Number.isNaN(parsed.valueOf()) ? value : parsed.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
@@ -3209,11 +3319,13 @@ function initManagementUI(deps = {}) {
     renderCancelled();
     dates.append(mgElement('h4', { text: 'Dates with no classes' }), mgField('Choose a date', cancelDate), mgElement('div', { className: 'mg-cancel-actions' }, [mgButton('Cancel this date', () => addCancelled(false)), mgButton('Cancel this week', () => addCancelled(true))]), cancelledList, mgNote('A week means Monday to Sunday. Press a cancelled date to add it back.'), mgElement('details', { className: 'mg-date-list-details' }, [mgElement('summary', { text: 'Edit the date list directly' }), mgField('One date per line (YYYY-MM-DD)', excluded)]));
     centralFields.append(dates);
-    const classes = mgElement('section', { className: 'mg-central-section' }, [mgElement('h3', { text: 'Classes, prices & payment links' }), mgNote('These are the saved totals and weekly times. They do not change your existing email drafts or website code until you apply them.')]);
+    const classes = mgElement('section', { className: 'mg-central-section' }, [mgElement('h3', { text: 'Classes, prices & payment links' }), mgNote('Rates calculate tuition from actual class dates and cancellations. SWL/Fulham new-member totals add membership once; Apex clubs add none. Senior Elite’s rate covers both weekly sessions. Review payment links whenever prices change.')]);
     centralDraft.classes.forEach((cls, index) => {
       const details = mgElement('details', { className: 'mg-class-settings' });
-      const summary = mgElement('summary', { text: (cls.name || 'Class ' + (index + 1)) + (cls.fee !== '' && cls.fee != null ? ' · £' + cls.fee : '') });
-      const body = mgElement('div', { className: 'mg-details-body' }, [centralInput('Class name', cls, 'name'), mgElement('div', { className: 'mg-two-fields' }, [centralInput('Total term fee (£)', cls, 'fee', 'number'), centralInput('Fee note', cls, 'feeNote')]), centralInput('Payment link', cls, 'paymentUrl', 'url'), centralInput('Include this class', cls, 'enabled', 'checkbox'), centralInput('One combined programme covering all sessions below', cls, 'combined', 'checkbox')]);
+      const summary = mgElement('summary', { 'data-class-summary': index, text: (cls.name || 'Class ' + (index + 1)) + (cls.fee !== '' && cls.fee != null ? ' · £' + cls.fee : '') });
+      const body = mgElement('div', { className: 'mg-details-body' }, [centralInput('Class name', cls, 'name'), centralInput(cls.combined ? 'Weekly programme rate (£)' : 'Price per session (£)', cls, 'weeklyRate', 'number'), mgElement('p', { className: 'field-hint', 'data-price-index': index }), mgElement('div', { className: 'mg-two-fields' }, [centralInput('Total term fee (£)', cls, 'fee', 'number'), centralInput('Fee note', cls, 'feeNote')]), ...(selectedClub === 'fulham' ? [] : [centralInput('Renewal payment link', cls, 'paymentUrl', 'url'), centralInput('New-member payment link', cls, 'offerPaymentUrl', 'url')]), centralInput('Include this class', cls, 'enabled', 'checkbox'), centralInput('One combined programme covering all sessions below', cls, 'combined', 'checkbox')]);
+      const feeInput = body.querySelector('input[id$="-fee"]') || [...body.querySelectorAll('input')].find(input => input.previousElementSibling?.textContent === 'Total term fee (£)');
+      if (feeInput) feeInput.dataset.feeIndex = index;
       const sessions = mgElement('div', { className: 'mg-session-list' });
       cls.sessions ||= [];
       cls.sessions.forEach((session, i) => {
@@ -3229,14 +3341,17 @@ function initManagementUI(deps = {}) {
     centralFields.append(classes);
     const clubDetails = mgElement('details', { className: 'mg-club-details' }, [mgElement('summary', { text: 'Club information & links' })]);
     const detailBody = mgElement('div', { className: 'mg-details-body' });
-    if (Object.prototype.hasOwnProperty.call(centralDraft.details, 'membershipFee')) detailBody.append(centralInput('Membership added to website prices (£)', centralDraft.details, 'membershipFee', 'number'));
+    if (Object.prototype.hasOwnProperty.call(centralDraft.details, 'membershipFee')) detailBody.append(centralInput('New-member membership charge (£)', centralDraft.details, 'membershipFee', 'number'));
+    if (selectedClub === 'fulham') for (const [key,label] of Object.entries({bankAccountName:'BACS account name',bankSortCode:'BACS sort code',bankAccountNumber:'BACS account number',bankReference:'BACS payment reference'})) detailBody.append(centralInput(label, centralDraft.details, key));
     const knownLabels = { membershipNote: 'Membership information', refundPolicy: 'Payment & cancellation policy', paymentInstructions: 'Payment instructions', whatToBring: 'What to wear & bring', location: 'Venue / address', parentViewing: 'Parent viewing', mapUrl: 'Google Maps link', uniformUrl: 'Uniform link', informationUrl: 'Website / more information link', policyUrl: 'Terms & conditions link', membershipUrl: 'Membership link', informationButtonText: 'Information button text', paymentButtonText: 'Payment button text', membershipButtonText: 'Membership button text', uniformButtonText: 'Uniform button text', policyButtonText: 'Policy button text', additionalInfo: 'Additional information' };
     for (const [key, label] of Object.entries(knownLabels)) if (Object.prototype.hasOwnProperty.call(centralDraft.details, key)) detailBody.append(centralInput(label, centralDraft.details, key, key.endsWith('Url') ? 'url' : key.endsWith('Text') ? 'text' : 'textarea'));
-    clubDetails.append(detailBody); centralFields.append(clubDetails);
+    clubDetails.append(detailBody); centralFields.append(clubDetails); refreshCentralPrices();
   }
   function saveCentral() {
+    refreshCentralPrices();
     const term = centralDraft.term;
     term.termName = [term.season, term.year].filter(Boolean).join(' ');
+    refreshCentralPrices();
     store.saveClubSettings(selectedClub, { term: mgClone(term), classes: mgClone(centralDraft.classes), details: mgClone(centralDraft.details) });
     centralDraft = mgClone(clubSettings()); centralDraftClub = selectedClub; stashCentralDraft(); renderCentralFields();
   }
@@ -3254,6 +3369,7 @@ const legacyStorageKey = 'gymnastics-email-builder-draft-v1';
 const draftsStorageKey = 'club-email-builder-drafts-v2';
 const basicFields = ['subject', 'body', 'button-text', 'button-url'];
 const campaignFields = {
+  'bank-account-name': 'bankAccountName', 'bank-sort-code': 'bankSortCode', 'bank-account-number': 'bankAccountNumber', 'bank-reference': 'bankReference',
   'term-name': 'termName', 'term-start': 'startDate', 'term-end': 'endDate',
   'parent-viewing-week': 'parentViewingWeek', 'payment-deadline': 'deadline', 'offer-expiry-hours': 'offerExpiryHours',
   'additional-info': 'additionalInfo', 'payment-instructions': 'paymentInstructions', 'membership-note': 'membershipNote',
@@ -3282,6 +3398,7 @@ let savedTermLabel = '';
 const UI_SETTINGS_VERSION = 1;
 let excludedDates = new Set();
 let drafts = {};
+let managementStore;
 let idCounter = 0;
 const newId = () => `c${Date.now().toString(36)}${(++idCounter).toString(36)}`;
 const safe = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -3376,6 +3493,10 @@ function restoreDraft() {
   updateRenewalVariantControl();
   $('button-text').value = string(draft.buttonText); $('button-url').value = string(draft.buttonUrl); $('add-button').checked = draft.addButton === true;
   for (const [id, key] of Object.entries(campaignFields)) $(id).value = string(draft.campaign?.[key]);
+  if (clubId === 'fulham' && isAdvanced && managementStore) {
+    const bank = managementStore.getClubSettings('fulham').details;
+    for (const [id,key] of Object.entries(campaignFields)) if (id.startsWith('bank-') && !$(id).value) $(id).value = string(bank[key]);
+  }
   classCards = normalizeCards(draft.cards);
   excludedDates = new Set(Array.isArray(draft.excludedDates) ? draft.excludedDates.filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value)) : []);
   restoreTermSettings(draft); restoreDeadlineSettings(draft);
@@ -3389,6 +3510,8 @@ function restoreDraft() {
   $('advanced-fields').hidden = !isAdvanced; $('advanced-fields').disabled = !isAdvanced;
   $('basic-button-panel').hidden = isAdvanced;
   for (const id of ['add-button', 'button-text', 'button-url']) $(id).disabled = isAdvanced;
+  document.querySelector('.mode-explanation').textContent = clubId === 'fulham' ? 'Check the term dates, class totals and bank details. Families can pay by BACS or cash.' : 'Check the term dates, class totals and payment links. Families can renew online or by cash.';
+  $('classes-heading').textContent = clubId === 'fulham' ? 'Classes & fees' : 'Classes & payment links';
   $('body-label').textContent = isAdvanced ? 'Opening message' : 'Your message';
   $('body-hint').textContent = isAdvanced ? 'Your greeting, class dates, payment details and club sign-off are added automatically.' : 'Your greeting, club logo and sign-off are already included.';
   $('preview-class-panel').hidden = !isAdvanced;
@@ -3470,7 +3593,9 @@ function updateDeadlineFields() {
   $('renewal-deadline-controls').hidden = emailMode !== 'renewal';
   $('renewal-viewing-controls').hidden = emailMode !== 'renewal';
   $('parent-viewing-week').disabled = emailMode !== 'renewal';
-  for (const id of ['location', 'map-url', 'parent-viewing']) {
+  $('bacs-fields').hidden = clubId !== 'fulham' || emailMode === 'basic';
+  $('payment-instructions').closest('.form-field').hidden = emailMode === 'renewal' || clubId === 'fulham';
+  for (const id of ['location', 'map-url', 'parent-viewing', 'refund-policy', 'policy-url', 'policy-button-text', 'what-to-bring', 'uniform-url', 'uniform-button-text', 'information-url', 'information-button-text']) {
     $(id).closest('.form-field').hidden = emailMode === 'renewal';
     $(id).disabled = emailMode === 'renewal';
   }
@@ -3493,7 +3618,7 @@ function feeFieldLabel(card) {
   return card.regularKey && emailMode === 'offer' && TERM_OFFER_MEMBERSHIP_PENCE[clubId] > 0 && activeTermPreset() ? 'Total incl. membership (£)' : 'Term fee (£)';
 }
 function feeFieldHint(card) {
-  const standard = card.combined ? 'One total fee for the whole combined programme.' : 'This fee and link apply to each separate weekly group.';
+  const standard = card.combined ? 'One total fee for the whole combined programme.' : (clubId === 'fulham' ? 'This fee applies to each separate weekly group.' : 'This fee and link apply to each separate weekly group.');
   const presetHint = card.regularKey && activeTermPreset() ? getTermFeeHint(clubId, emailMode) : '';
   return `${standard}${presetHint ? ` ${presetHint}` : ''} The total is editable and stays as entered when dates are cancelled.`;
 }
@@ -3586,9 +3711,9 @@ function validate() {
       if (!card.name.trim()) { reportError('Give each class a name.', node.querySelector('[data-card-field="name"]')); return null; }
       if (!card.sessions.length) { reportError(`Add a weekly session for ${card.name}.`, node.querySelector('[data-add-session]')); return null; }
       if (card.fee.trim() === '') { reportError(`Add the total term fee for ${card.name}.`, node.querySelector('[data-card-field="fee"]')); return null; }
-      if (!card.paymentUrl.trim()) { reportError(`Add the payment link for ${card.name}.`, node.querySelector('[data-card-field="paymentUrl"]')); return null; }
+      if (clubId !== 'fulham' && !card.paymentUrl.trim()) { reportError(`Add the payment link for ${card.name}.`, node.querySelector('[data-card-field="paymentUrl"]')); return null; }
     }
-    try { validateCampaign(emailMode, config.campaign); }
+    try { validateCampaign(emailMode, config.campaign, clubId); }
     catch (error) { reportError(error.message || 'Check your term and class details.'); return null; }
   }
   return config;
@@ -3602,12 +3727,12 @@ function timetableSummary(card) {
   return card.sessions.map(session => `${dayName(session.weekday).slice(0, 3) || 'Day'} ${session.startTime || '—'}–${session.endTime || '—'}`).join(' · ');
 }
 function renderClassCards() {
-  $('class-list').innerHTML = classCards.map((card, index) => `<article class="class-editor${card.enabled === false ? ' class-excluded' : ''}" data-card="${safe(card.id)}"><div class="class-editor-heading"><h4><span class="class-number">${index + 1}</span><span data-card-title>${safe(card.name || `Class ${index + 1}`)}</span></h4><label class="include-class"><input id="${card.id}-include" type="checkbox" data-card-field="enabled" ${card.enabled !== false ? 'checked' : ''}><span>Include</span></label></div><p class="compact-timetable" data-timetable-summary>${safe(timetableSummary(card))}${card.combined ? ' · Combined programme' : ''}</p><div data-card-body ${card.enabled === false ? 'hidden' : ''}><div class="class-payment-grid"><div class="form-field"><label for="${card.id}-fee" data-fee-label>${safe(feeFieldLabel(card))}</label><input id="${card.id}-fee" type="number" min="0" step="0.01" inputmode="decimal" data-card-field="fee" placeholder="0.00" value="${safe(card.fee)}"></div><div class="form-field"><label for="${card.id}-link">Payment link</label><input id="${card.id}-link" type="url" data-card-field="paymentUrl" placeholder="https://" value="${safe(card.paymentUrl)}"></div></div><p class="field-hint after-input compact-fee-hint" data-fee-hint>${safe(feeFieldHint(card))}</p><details class="edit-class-details" ${card.regularKey ? '' : 'open'}><summary>Edit class name or timetable</summary><div class="edit-class-body"><div class="form-field"><label for="${card.id}-name">Class name</label><input id="${card.id}-name" type="text" data-card-field="name" maxlength="100" placeholder="e.g. Beginners" value="${safe(card.name)}"></div><div class="class-sessions"><div class="session-heading">Weekly groups / sessions</div><div data-sessions>${card.sessions.map((session, sessionIndex) => sessionMarkup(card, session, sessionIndex)).join('')}</div><button type="button" class="add-session" data-add-session>＋ Add a day / time</button></div><label class="combine-label"><input type="checkbox" data-card-field="combined" ${card.combined ? 'checked' : ''}><span>These sessions form one combined programme<small>For a class that attends all the sessions above. Otherwise each day / time is a separate class option.</small></span></label><div class="form-field fee-note"><label for="${card.id}-note">Fee note <span>Optional</span></label><input id="${card.id}-note" type="text" data-card-field="feeNote" placeholder="Any extra detail about this fee" value="${safe(card.feeNote)}"></div>${card.regularKey ? '' : `<button type="button" class="remove-class" data-remove-card aria-label="Remove ${safe(card.name || `class ${index + 1}`)}">Remove this custom class</button>`}</div></details><details class="class-dates-details"><summary>Teaching dates &amp; session counts<small data-count-summary></small></summary><div class="class-schedule" data-schedule aria-live="polite"></div></details></div></article>`).join('');
+  $('class-list').innerHTML = classCards.map((card, index) => `<article class="class-editor${card.enabled === false ? ' class-excluded' : ''}" data-card="${safe(card.id)}"><div class="class-editor-heading"><h4><span class="class-number">${index + 1}</span><span data-card-title>${safe(card.name || `Class ${index + 1}`)}</span></h4><label class="include-class"><input id="${card.id}-include" type="checkbox" data-card-field="enabled" ${card.enabled !== false ? 'checked' : ''}><span>Include</span></label></div><p class="compact-timetable" data-timetable-summary>${safe(timetableSummary(card))}${card.combined ? ' · Combined programme' : ''}</p><div data-card-body ${card.enabled === false ? 'hidden' : ''}><div class="class-payment-grid"><div class="form-field"><label for="${card.id}-fee" data-fee-label>${safe(feeFieldLabel(card))}</label><input id="${card.id}-fee" type="number" min="0" step="0.01" inputmode="decimal" data-card-field="fee" placeholder="0.00" value="${safe(card.fee)}"></div><div class="form-field" ${clubId === 'fulham' ? 'hidden' : ''}><label for="${card.id}-link">Payment link</label><input id="${card.id}-link" type="url" data-card-field="paymentUrl" placeholder="https://" value="${safe(card.paymentUrl)}"></div></div><p class="field-hint after-input compact-fee-hint" data-fee-hint>${safe(feeFieldHint(card))}</p><details class="edit-class-details" ${card.regularKey ? '' : 'open'}><summary>Edit class name or timetable</summary><div class="edit-class-body"><div class="form-field"><label for="${card.id}-name">Class name</label><input id="${card.id}-name" type="text" data-card-field="name" maxlength="100" placeholder="e.g. Beginners" value="${safe(card.name)}"></div><div class="class-sessions"><div class="session-heading">Weekly groups / sessions</div><div data-sessions>${card.sessions.map((session, sessionIndex) => sessionMarkup(card, session, sessionIndex)).join('')}</div><button type="button" class="add-session" data-add-session>＋ Add a day / time</button></div><label class="combine-label"><input type="checkbox" data-card-field="combined" ${card.combined ? 'checked' : ''}><span>These sessions form one combined programme<small>For a class that attends all the sessions above. Otherwise each day / time is a separate class option.</small></span></label><div class="form-field fee-note"><label for="${card.id}-note">Fee note <span>Optional</span></label><input id="${card.id}-note" type="text" data-card-field="feeNote" placeholder="Any extra detail about this fee" value="${safe(card.feeNote)}"></div>${card.regularKey ? '' : `<button type="button" class="remove-class" data-remove-card aria-label="Remove ${safe(card.name || `class ${index + 1}`)}">Remove this custom class</button>`}</div></details><details class="class-dates-details"><summary>Teaching dates &amp; session counts<small data-count-summary></small></summary><div class="class-schedule" data-schedule aria-live="polite"></div></details></div></article>`).join('');
 }
 function updateRegularClassHelp() {
   const hasRegular = Boolean(REGULAR_TIMETABLES[clubId]);
   $('regular-classes-note').hidden = !hasRegular;
-  $('regular-classes-note').innerHTML = hasRegular ? `Your regular classes and weekly times are ready. Check the fees and payment links. Untick any class you don’t need for this message. <a href="${safe(TIMETABLE_SOURCES[clubId])}" target="_blank" rel="noopener noreferrer">View club timetable ↗</a>` : '';
+  $('regular-classes-note').innerHTML = hasRegular ? `Your regular classes and weekly times are ready. Check the fees${clubId === 'fulham' ? '' : ' and payment links'}. Untick any class you don’t need for this message. <a href="${safe(TIMETABLE_SOURCES[clubId])}" target="_blank" rel="noopener noreferrer">View club timetable ↗</a>` : '';
   $('classes-hint').textContent = hasRegular ? 'Included classes appear in the copied script. Fees and links are shared across each class type’s weekly groups.' : 'Add the classes you need, then enter their weekly times, fees and payment links.';
   $('add-class').innerHTML = `<span aria-hidden="true">＋</span> ${hasRegular ? 'Add a different class' : 'Add another class'}`;
 }
@@ -3917,7 +4042,8 @@ else showAccessGate();
 
 // Shared settings are applied only on an explicit action. The original editor
 // remains the owner of email drafts and its existing preview/send generation.
-const managementStore = createManagementStore(accessStorage);
+managementStore = createManagementStore(accessStorage);
+restoreDraft(); saveDraft();
 initManagementUI({
   clubs: CLUBS,
   catalog: WEBSITE_CATALOG,
@@ -3932,16 +4058,17 @@ initManagementUI({
     return {
       ...settings,
       term: { season: ['Spring', 'Summer', 'Autumn'].includes(draft.termChoice) ? draft.termChoice : '', termName: campaign.termName || '', year: campaign.startDate ? Number(campaign.startDate.slice(0, 4)) : null, startDate: campaign.startDate || '', endDate: campaign.endDate || '', deadline: campaign.deadline || '', excludedDates: draft.excludedDates || [] },
-      classes: draft.cards || [],
+      classes: (draft.cards || []).map(card => { const saved = settings.classes.find(item => item.regularKey && item.regularKey === card.regularKey); return { ...card, ...(saved ? { weeklyRate: saved.weeklyRate, offerPaymentUrl: saved.offerPaymentUrl } : {}) }; }),
       details: { ...settings.details, ...Object.fromEntries(Object.values(campaignFields).filter(key => !['termName', 'startDate', 'endDate', 'deadline', 'offerExpiryHours'].includes(key)).map(key => [key, campaign[key] || ''])) }
     };
   },
   onApplyEmailSettings(targetClub, settings, options) {
     saveDraft();
-    const key = `${targetClub}:renewal`;
-    const draft = applyTermDefaults(targetClub, 'renewal', migrateClubInfo(targetClub, 'renewal', migrateRegularTimetable(targetClub, 'renewal', drafts[key] || {})));
+    const targetMode = options.mode === 'offer' ? 'offer' : 'renewal';
+    const key = `${targetClub}:${targetMode}`;
+    const draft = applyTermDefaults(targetClub, targetMode, migrateClubInfo(targetClub, targetMode, migrateRegularTimetable(targetClub, targetMode, drafts[key] || {})));
     drafts[key] = applyClubSettingsToEmailDraft(draft, settings, { ...options, clubId: targetClub });
-    clubId = targetClub; emailMode = 'renewal';
+    clubId = targetClub; emailMode = targetMode;
     clearPreview(); clearErrors(); restoreDraft(); saveDraft();
   },
   onBackupRestored(report) {
