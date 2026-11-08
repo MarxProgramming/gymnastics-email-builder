@@ -167,14 +167,14 @@ Offline tests use mocked Google services and must not be described as real deliv
 - Saturday: SATB1, SATFV1, SATJS1, SATINT1, SATADV1, SATFV2, SATSES1
 - Sunday: SUNB1, SUNINT1 (09:30), SUNINT2 (10:30), SUNADV1
 
-SATFV1 maps to 09:30 and SATFV2 to 12:15. Reordering or excluding classes never renumbers these codes. Standard class identity is retained if a class is renamed. A missing/ambiguous standard timetable mapping produces a clear error; custom classes are not guessed. To use this workflow, generate and replace the previous renewal script, preserving the basic composer and merging its menu call into the single onOpen if installed together. Existing scripts already pasted into Sheets do not update automatically.
+SATFV1 maps to 09:30 and SATFV2 to 12:15. Reordering or excluding classes never renumbers these codes. Standard class identity is retained if a class is renamed. A missing/ambiguous standard timetable mapping produces a clear error; custom classes are not guessed. To use this workflow, generate and replace the previous renewal script, preserving other scripts and keeping one onOpen if installed together. Existing scripts already pasted into Sheets do not update automatically.
 
 
 ## Renewal companion installation (v2.6)
 
 The browser now exports renewals and renewal reminders through `generateCompanionScript`. Each is a separate companion file with a private closure for all campaign settings, logos and helpers. Only three club/message-specific functions are shared: Menu, Send and Check. It declares no `onOpen`, and main renewals and reminders have different menus and names. Basic and offer exports retain their existing format.
 
-Keep the basic composer. Add a renewal file once, then replace that file’s contents when changing term or wording. Do not append a second copy of the same club/message companion. Main and reminder may each have a file.
+Prepare basic messages in this app; no in-sheet composer is needed. Add a renewal file once, then replace that file’s contents when changing term or wording. Do not append a second copy of the same club/message companion. Main and reminder may each have a file.
 
 The existing project opening function needs one optional menu call per companion, once. For SWL:
 
@@ -193,3 +193,9 @@ Preserve unrelated menu calls when connecting other projects. The exact call app
 Captured source and the catalog rebuild helpers are included in `scripts/website-sources/`. To rebuild from the archived originals, run `node scripts/website-sources/build-catalog.mjs`, then rerun the tests and standalone build.
 
 Renewals and reminders (v3.0.1) omit venue/address and Google Maps. Parents’ viewing uses the optional **Parents’ viewing — week of** date in Term & dates; leaving it blank omits that section. Older saved viewing prose is ignored for renewals. Offers retain their existing location and viewing information. Regenerate and replace previously copied renewal scripts to apply this change.
+
+## Basic emails: prepare in the app, send in Sheets
+
+Choose a club, write the subject and message, optionally add a button, and create the preview. Copy the complete Apps Script. Replace the previous basic-email file in the bound spreadsheet project, keeping separate renewal/reminder files. Save and reload the sheet, select recipient rows, then use the club email menu. The generated basic script includes optional renewal and reminder menu connections. Keep one onOpen function; preserve any unrelated menu calls. No HTML composer, google.script.run callback, or cache-backed draft is needed in Sheets.
+
+Verified with 318 offline tests on 8 November 2026, including all four club templates, preview/send parity, reordered headings, selected-row sending, status updates and renewal menu coexistence. These are mocked sender tests, not live deliveries.
