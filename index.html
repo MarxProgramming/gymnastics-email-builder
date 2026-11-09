@@ -2258,6 +2258,17 @@ function validateClubSettings(input, clubId) {
   if (!membershipFee) fail('Enter a website membership fee, or 0 when it is paid separately.');
   details.membershipFee = Number(membershipFee);
   const term = normalizeTerm(data.term || {});
+  // Seed existing and new club data once; later manual edits (including clearing)
+  // remain under the owner's control.
+  if (clubId !== 'apexdance' && !details.parentViewingDefaultVersion && term.endDate) {
+    if (!details.parentViewingWeek) {
+      const viewing = new Date(term.endDate + 'T00:00:00Z');
+      viewing.setUTCDate(viewing.getUTCDate() - ((viewing.getUTCDay() + 6) % 7) - 7);
+      details.parentViewingWeek = viewing.toISOString().slice(0, 10);
+    }
+    details.parentViewingDefaultVersion = 1;
+  }
+
   const classes = calculateClubClassPrices({ term, classes: normalizeClasses(data.classes || [], clubId), details }, clubId);
   term.totalWeeks = countTeachingWeeks({ term, classes });
   return { term, classes, details,
