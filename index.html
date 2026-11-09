@@ -1180,7 +1180,6 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
     addButton(campaign.uniformUrl, campaign.uniformButtonText || 'View leotards & uniform');
     addText(campaign.location, 'Location');
     addButton(campaign.mapUrl, 'Google Maps');
-    addText(campaign.parentViewing, 'Parent viewing');
     addButton(campaign.informationUrl, campaign.informationButtonText || 'More information');
   }
   return { subject, html, plain: plain.join('\n\n') };
@@ -2258,15 +2257,13 @@ function validateClubSettings(input, clubId) {
   if (!membershipFee) fail('Enter a website membership fee, or 0 when it is paid separately.');
   details.membershipFee = Number(membershipFee);
   const term = normalizeTerm(data.term || {});
-  // Seed existing and new club data once; later manual edits (including clearing)
-  // remain under the owner's control.
-  if (clubId !== 'apexdance' && !details.parentViewingDefaultVersion && term.endDate) {
-    if (!details.parentViewingWeek) {
-      const viewing = new Date(term.endDate + 'T00:00:00Z');
-      viewing.setUTCDate(viewing.getUTCDate() - ((viewing.getUTCDay() + 6) % 7) - 7);
-      details.parentViewingWeek = viewing.toISOString().slice(0, 10);
+  // Viewing belongs to the current Autumn term, not the Spring term being renewed.
+  // Correct the previous March default once while preserving other custom dates.
+  if (clubId !== 'apexdance' && Number(details.parentViewingDefaultVersion || 0) < 2) {
+    if (!details.parentViewingWeek || details.parentViewingWeek === '2027-03-08') {
+      details.parentViewingWeek = '2026-12-07';
     }
-    details.parentViewingDefaultVersion = 1;
+    details.parentViewingDefaultVersion = 2;
   }
 
   const classes = calculateClubClassPrices({ term, classes: normalizeClasses(data.classes || [], clubId), details }, clubId);
