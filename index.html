@@ -1172,6 +1172,7 @@ function renderCampaignContent(mode, campaign, cls, content, names, brand) {
   }
   addText(campaign.additionalInfo, 'Further information');
   if (mode === 'renewal') {
+    if (brand.name === 'SWL Gymnastics') addText('If you would like to request a change of class day for next term, please reply to this email as soon as possible. We cannot guarantee a change, but the sooner you let us know, the better our chances of accommodating your request.', 'Change of day requests');
     if (campaign.parentViewingWeek) addText('Week of ' + campaignDateText_(campaign.parentViewingWeek) + '.', 'Parents’ viewing');
   } else {
     addText(campaign.refundPolicy, 'Payment & cancellation policy');
